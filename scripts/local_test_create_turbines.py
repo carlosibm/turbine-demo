@@ -20,7 +20,7 @@ EngineLogging.configure_console_logging(logging.DEBUG)
 
 #with open('credentials.json', encoding='utf-8') as F:
 db_schema = 'bluadmin' #  set if you are not using the default
-with open('credentials_Monitor-Demo.json', encoding='utf-8') as F:
+with open('bouygues-beta-credentials.json', encoding='utf-8') as F:
     credentials = json.loads(F.read())
 #db_schema = 'dash100462'  # replace if you are not using the default schema
 #with open('credentials_dev2.json', encoding='utf-8') as F:
@@ -45,7 +45,7 @@ To do anything with IoT Platform Analytics, you will need one or more entity typ
 You can create entity types through the IoT Platform or using the python API as shown below.
 The database schema is only needed if you are not using the default schema. You can also rename the timestamp.
 '''
-entity_type_name = 'Clients'
+entity_type_name = 'Equipment'
 #db.drop_table(entity_name, schema = db_schema)
 
 entity = Equipment(name = entity_type_name,

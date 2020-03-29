@@ -1,33 +1,33 @@
 [
     {
         "id": "A101",
-        "name": "FUNCTION",
+        "name": "equipment_type",
         "value": "Line 1"
     },
     {
         "id": "A101",
-        "name": "CLIENT",
+        "name": "dim_business",
         "value": "Mariners Way MFG"
     },
     {
         "id": "A101",
-        "name": "ORG",
+        "name": "site",
         "value": "Production"
     }
     ,
     {
         "id": "B102",
-        "name": "FUNCTION",
+        "name": "equipment_type",
         "value": "Line 2"
     },
     {
         "id": "B102",
-        "name": "CLIENT",
+        "name": "dim_business",
         "value": "Mariners Way MFG"
     },
     {
         "id": "B102",
-        "name": "ORG",
+        "name": "site",
         "value": "Production"
     }
 ]

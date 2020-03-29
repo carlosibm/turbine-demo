@@ -17,7 +17,7 @@ class index:
 
         response = {"deviceid" : ["A101","B102"],
                     "temperature" : [37,39],
-                    "pressure" : [92,89]}
+                    "drvn_p1" : [92,89]}
 
         web.header('Content-Type', 'application/json')
         return json.dumps(response)

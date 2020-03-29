@@ -21,9 +21,9 @@ from ai import settings
 #with open('credentials_Monitor-Demo.json', encoding='utf-8') as F:
 #    credentials = json.loads(F.read())
 db_schema = 'bluadmin' #  set if you are not using the default
-#with open('/Users/carlos.ferreira1ibm.com/ws/workspaceiot/functions/turbine-demo/credentials_test_iotp.json', encoding='utf-8') as F:
+#with open('/Users/carlos.ferreira1ibm.com/ws/workspaceiot/functions/turbine-demo/bouygues-beta-credentials.json', encoding='utf-8') as F:
 #    credentials = json.loads(F.read())
-with open('/Users/carlos.ferreira1ibm.com/ws/shell/turbine-demo/credentials_Monitor-Demo.json', encoding='utf-8') as F:
+with open('/Users/carlos.ferreira1ibm.com/ws/shell/turbine-demo/bouygues-beta-credentials.json', encoding='utf-8') as F:
     credentials = json.loads(F.read())
 #db_schema = 'dash100462'  # replace if you are not using the default schema
 #with open('credentials_dev2.json', encoding='utf-8') as F:
@@ -48,7 +48,7 @@ To do anything with IoT Platform Analytics, you will need one or more entity typ
 You can create entity types through the IoT Platform or using the python API as shown below.
 The database schema is only needed if you are not using the default schema. You can also rename the timestamp.
 '''
-entity_name = 'Clients05'
+entity_name = 'Equipment'
 BI_USERNAME = settings.BI_USERNAME
 BI_PASSWORD = settings.BI_PASSWORD
 BI_TENANT_ID = settings.BI_TENANT_ID
@@ -62,8 +62,8 @@ db.drop_table(entity_name, schema = db_schema)
 
 entity = EntityType(entity_name,db,
                     Column('TURBINE_ID',String(50)),
-                    Column('TEMPERATURE',Float()),
-                    Column('PRESSURE',Float()),
+                    Column('drvn_t1',Float()),
+                    Column('drvn_p1',Float()),
                     Column('STEP',Float()),
                     Column('PRESS_X',Float()),
                     Column('PRESS_Y',Float()),
@@ -74,7 +74,7 @@ entity = EntityType(entity_name,db,
                                     request='GET',
                                     url="https://turbine-simulator.mybluemix.net/v1/api/reading",
                                     output_item = 'http_preload_done'),
-                    bif.PythonExpression(expression='df["TEMPERATURE"]*df["PRESSURE"]',
+                    bif.PythonExpression(expression='df["drvn_t1"]*df["drvn_p1"]',
                                          output_name = 'VOLUME'),
                     **{
                       '_timestamp' : 'evt_timestamp',

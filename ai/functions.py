@@ -25,7 +25,6 @@ EngineLogging.configure_console_logging(logging.DEBUG)
 
 # Specify the URL to your package here.
 # This URL must be accessible via pip install
-#PACKAGE_URL = 'git+https://github.com/madendorff/functions@'
 PACKAGE_URL = 'git+https://github.com/fe01134/turbine-demo@'
 
 
@@ -85,12 +84,12 @@ class TurbineHTTPPreload(BasePreload):
             temperatures.append(temperature)
         return temperatures
 
-    def getPressures (self, data = None ):
-        pressures = []
-        for pressure in data:
-            logging.debug("parsePressures  pressure  %s " %pressure)
-            pressures.append(pressure)
-        return pressures
+    def getdrvn_p1s (self, data = None ):
+        drvn_p1s = []
+        for drvn_p1 in data:
+            logging.debug("parsedrvn_p1s  drvn_p1  %s " %drvn_p1)
+            drvn_p1s.append(drvn_p1)
+        return drvn_p1s
 
     def getAssets (self, ):
         # Gets turbine simulation data from https://turbine-simulator.mybluemix.net/v1/api/#!/default/get_reading
@@ -99,13 +98,13 @@ class TurbineHTTPPreload(BasePreload):
         # Initialize
         net_metrics_data = {}
         #metrics_TURBINE_ID = []
-        #metrics_TEMPERATURE  = []
-        #metrics_PRESSURE  = []
+        #metrics_drvn_t1  = []
+        #metrics_drvn_p1  = []
 
         #response_back = { "deviceid" : ["A101","B102"],
         #                "TURBINE_ID" : ["A101","B102"],
-        #                "TEMPERATURE" : [37,39],
-        #                "PRESSURE" : [92,89]}
+        #                "drvn_t1" : [37,39],
+        #                "drvn_p1" : [92,89]}
         logging.debug("Getting list of Assets from Turbine Simulation REST API")
         uri = self.tenant
         header = { 'Accept' : 'application/json' }
@@ -127,17 +126,17 @@ class TurbineHTTPPreload(BasePreload):
             for metric in metrics_json.keys():
                 logging.debug( "looping on metric key %s " %metric )
                 logging.debug( "looping on metrics %s " %metrics_json[metric] )
-                if metric == 'TEMPERATURE':
-                    logging.debug( "Found TEMPERATURE %s " %metrics_json[metric] )
+                if metric == 'drvn_t1':
+                    logging.debug( "Found drvn_t1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'PREDICT_TEMPERATURE':
-                    logging.debug( "Found PREDICT_TEMPERATURE %s " %metrics_json[metric])
+                if metric == 'predict_drvn_t1':
+                    logging.debug( "Found predict_drvn_t1 %s " %metrics_json[metric])
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'PRESSURE':
-                    logging.debug( "Found PRESSURE %s " %metrics_json[metric] )
+                if metric == 'drvn_p1':
+                    logging.debug( "Found drvn_p1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'PREDICT_PRESSURE':
-                    logging.debug( "Found PREDICT_PRESSURE %s " %metrics_json[metric] )
+                if metric == 'predict_drvn_p1':
+                    logging.debug( "Found predict_drvn_p1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
                 if metric == 'TURBINE_ID':
                     logging.debug( "Found TURBINE_ID %s " %metrics_json[metric] )
@@ -154,8 +153,8 @@ class TurbineHTTPPreload(BasePreload):
                 if metric == 'PRESS_X':
                     logging.debug( "Found PRESS_X %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'PREDICT_PRESS_X':
-                    logging.debug( "Found PREDICT_PRESS_X %s " %metrics_json[metric] )
+                if metric == 'predict_PRESS_X':
+                    logging.debug( "Found predict_PRESS_X %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
                 if metric == 'PRESS_Y':
                     logging.debug( "Found PRESS_Y %s " %metrics_json[metric] )
@@ -184,14 +183,14 @@ class TurbineHTTPPreload(BasePreload):
                 if metric == 'B_PRESS_Y':
                     logging.debug( "Found B_PRESS_Y %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'CLIENT':
-                    logging.debug( "Found CLIENT %s " %metrics_json[metric] )
+                if metric == 'dim_business':
+                    logging.debug( "Found dim_business %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'ORG':
-                    logging.debug( "Found ORG %s " %metrics_json[metric] )
+                if metric == 'dim_site':
+                    logging.debug( "Found dim_site %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'FUNCTION':
-                    logging.debug( "Found FUNCTION %s " %metrics_json[metric] )
+                if metric == 'equipment_type':
+                    logging.debug( "Found equipment_type %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
 
             logging.debug( "net_metrics_data %s " %net_metrics_data )
@@ -203,23 +202,23 @@ class TurbineHTTPPreload(BasePreload):
             rows = len(turbines)
             logging.debug( "length of turbines %s " %rows )
 
-            #logging.debug( "metrics_json TEMPERATURE %s " %metrics_json['TEMPERATURE'] )
-            temperatures = self.getTemperatures(metrics_json['TEMPERATURE'] )
+            #logging.debug( "metrics_json drvn_t1 %s " %metrics_json['drvn_t1'] )
+            temperatures = self.getTemperatures(metrics_json['drvn_t1'] )
             logging.debug( "temperatures %s " %temperatures )
 
-            pressures = self.getPressures( metrics_json['PRESSURE'])
-            logging.debug( "pressures %s " %pressures      )
+            drvn_p1s = self.getdrvn_p1s( metrics_json['drvn_p1'])
+            logging.debug( "drvn_p1s %s " %drvn_p1s      )
             '''
         else:
             # This means something went wrong.
             logging.debug("Error calling REST API. Using Hard coded values")
-            net_metrics_data =  {'A_TEMP_Y': [10, 20], 'PRESSURE': [172.64187332977474, -191.7466699309894], 'TURBINE_ID': ['A101', 'B102'], 'PRESS_Y': [30, 60], 'TEMP_X': [10, 40], 'A_TEMP_X': [10, 40], 'TEMPERATURE': [69.0567493319099, -78.44181951722294], 'PRESS_X': [80, 80], 'PREDICT_PRESS_X': [80, 80], 'PREDICT_PRESSURE': [172.64187332977474, -191.7466699309894], 'STEP': [21.0, 21.0], 'B_PRESS_Y': [30, 60], 'A_PRESS_Y': [30, 50], 'A_PRESS_X': [30, 60], 'TEMP_Y': [10, 20], 'B_TEMP_X': [10, 40], 'B_PRESS_X': [30, 50], 'B_TEMP_Y': [10, 20], 'PREDICT_TEMPERATURE': [69.0567493319099, -78.44181951722294]}
+            net_metrics_data =  {'A_TEMP_Y': [10, 20], 'drvn_p1': [172.64187332977474, -191.7466699309894], 'TURBINE_ID': ['A101', 'B102'], 'PRESS_Y': [30, 60], 'TEMP_X': [10, 40], 'A_TEMP_X': [10, 40], 'drvn_t1': [69.0567493319099, -78.44181951722294], 'PRESS_X': [80, 80], 'predict_PRESS_X': [80, 80], 'predict_drvn_p1': [172.64187332977474, -191.7466699309894], 'STEP': [21.0, 21.0], 'B_PRESS_Y': [30, 60], 'A_PRESS_Y': [30, 50], 'A_PRESS_X': [30, 60], 'TEMP_Y': [10, 20], 'B_TEMP_X': [10, 40], 'B_PRESS_X': [30, 50], 'B_TEMP_Y': [10, 20], 'predict_drvn_t1': [69.0567493319099, -78.44181951722294]}
             rows = len(net_metrics_data)
             #metrics_TURBINE_ID.append("NA")
-            #metrics_TEMPERATURE.append(0.0)
-            #metrics_PRESSURE.append(0.0)
+            #metrics_drvn_t1.append(0.0)
+            #metrics_drvn_p1.append(0.0)
             rows = 0
-        #return turbines, temperatures, pressures, rows
+        #return turbines, temperatures, drvn_p1s, rows
         logging.debug( "return net_metrics_data %s " %net_metrics_data      )
         logging.debug("length rows %d" %rows )
         return net_metrics_data, rows
@@ -244,7 +243,7 @@ class TurbineHTTPPreload(BasePreload):
 
         # Call external service to get device data.
         metrics_json, rows = self.getAssets()
-        #metrics_TURBINE_ID, metrics_TEMPERATURE, metrics_PRESSURE, rows = self.getAssets()
+        #metrics_TURBINE_ID, metrics_drvn_t1, metrics_drvn_p1, rows = self.getAssets()
 
         # Create Numpy array using Building Insights energy usage data
         response_data = {}
@@ -284,18 +283,18 @@ class TurbineHTTPPreload(BasePreload):
         Set dimensional data
         hardcode for now
         '''
-        response_data[ 'CLIENT' ] =  ['Mariners Way MFG', 'Mariners Way MFG']
-        response_data[ 'ORGANIZATION' ] =  ['Production', 'Production']
-        response_data[ 'FUNCTION' ] =  ['Line 1', 'Line 2']
+        response_data[ 'dim_business' ] =  ['Mariners Way MFG', 'Mariners Way MFG']
+        response_data[ 'dim_site' ] =  ['Production', 'Production']
+        response_data[ 'equipment_type' ] =  ['Line 1', 'Line 2']
 
         '''
         # Create Numpy array using remaining entity metrics
         '''
-        #logging.debug("length metrics_TEMPERATURE %d" %len(metrics_TEMPERATURE) )
-        #logging.debug("length metrics_PRESSURE %d" %len(metrics_PRESSURE) )
+        #logging.debug("length metrics_drvn_t1 %d" %len(metrics_drvn_t1) )
+        #logging.debug("length metrics_drvn_p1 %d" %len(metrics_drvn_p1) )
         response_data['turbine_id'] = np.array( metrics_json['TURBINE_ID'] )
-        #response_data['TEMPERATURE'] = np.array( metrics_TEMPERATURE )
-        #response_data['PRESSURE'] = np.array( metrics_PRESSURE )
+        #response_data['drvn_t1'] = np.array( metrics_drvn_t1 )
+        #response_data['drvn_p1'] = np.array( metrics_drvn_p1 )
         #response_data['devicetype'] = np.array(metrics_TURBINE_ID)
         response_data['deviceid'] = np.array( metrics_json['TURBINE_ID'] )
         #response_data['eventtype'] = np.array(metrics_TURBINE_ID)

@@ -28,8 +28,8 @@ with open('credentials_Monitor-Demo.json', encoding='utf-8') as F:
 
 db = Database(credentials = credentials)
 
-entity_name = 'Clients03'
-#(params, metadata)= metadata.retrieve_entity_type_metadata(_db=db, logical_name = "Clients2")
+entity_name = 'Equipment'
+#(params, metadata)= metadata.retrieve_entity_type_metadata(_db=db, logical_name = "Equipment")
 #params = entity.get_server_params()
 print ( " new  entity params" )
 #print (params)

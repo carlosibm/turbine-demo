@@ -16,20 +16,21 @@ EngineLogging.configure_console_logging(logging.DEBUG)
 #    credentials = json.loads(F.read())
 print("here")
 db_schema = 'bluadmin' #  set if you are not using the default
-with open('credentials_test_iotp.json', encoding='utf-8') as F:
+with open('../bouygues-beta-credentials.json', encoding='utf-8') as F:
     credentials = json.loads(F.read())
 #db_schema = 'dash100462'  # replace if you are not using the default schema
 #with open('credentials_dev2.json', encoding='utf-8') as F:
 #    credentials = json.loads(F.read())
 print("here db")
 db = Database(credentials = credentials)
+
 entity_type_name = 'Equipment'
 #db.drop_table(entity_type_name, schema = db_schema)
 print("here entity")
 entity = Equipment(name = entity_type_name,
                 db = db,
                 db_schema = db_schema,
-                description = "Manufacturing Operations Control Center 05",
+                description = "Smart Connect Operations Control Center",
                 )
 
 entity.register(raise_error=False)
@@ -38,6 +39,7 @@ entity.register(raise_error=False)
 #db.register_functions([TurbineHTTPPreload])
 
 #entity.add_slowly_changing_dimension(self,property_name,datatype,**kwargs):
+print("here make_dimension")
 entity.make_dimension()
 
 entity.exec_local_pipeline()
