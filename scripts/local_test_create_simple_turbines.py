@@ -36,7 +36,8 @@ entity = Equipment(name = entity_type_name,
 entity.register(raise_error=False)
 # You must unregister_functions if you change the mehod signature or required inputs.
 #db.unregister_functions(["DataHTTPPreload"])
-#db.register_functions([TurbineHTTPPreload])
+db.register_functions([TurbineHTTPPreload])
+print("registered function")
 
 #entity.add_slowly_changing_dimension(self,property_name,datatype,**kwargs):
 print("here make_dimension")
