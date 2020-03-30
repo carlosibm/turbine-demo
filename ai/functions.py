@@ -165,8 +165,8 @@ class TurbineHTTPPreload(BasePreload):
                 if metric == 'ENTITY_ID':
                     logging.debug( "Found ENTITY_ID %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'MAINTENANCE_STATUS_Y':
-                    logging.debug( "Found MAINTENANCE_STATUS_Y %s " %metrics_json[metric] )
+                if metric == 'MAINTEANCNE_STATUS_Y':
+                    logging.debug( "Found MAINTEANCNE_STATUS_Y %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
                 if metric == 'MAINTENANCE_STATUS_X':
                     logging.debug( "Found MAINTENANCE_STATUS_X %s " %metrics_json[metric] )
