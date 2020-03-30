@@ -126,71 +126,77 @@ class TurbineHTTPPreload(BasePreload):
             for metric in metrics_json.keys():
                 logging.debug( "looping on metric key %s " %metric )
                 logging.debug( "looping on metrics %s " %metrics_json[metric] )
-                if metric == 'drvn_t1':
-                    logging.debug( "Found drvn_t1 %s " %metrics_json[metric] )
+                if metric == 'ASSET_ID':
+                    logging.debug( "Found ASSET_ID %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'predict_drvn_t1':
-                    logging.debug( "Found predict_drvn_t1 %s " %metrics_json[metric])
+                if metric == 'COMPRESSOR_IN_X':
+                    logging.debug( "Found COMPRESSOR_IN_X %s " %metrics_json[metric])
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'drvn_p1':
-                    logging.debug( "Found drvn_p1 %s " %metrics_json[metric] )
+                if metric == 'COMPRESSOR_IN_Y':
+                    logging.debug( "Found COMPRESSOR_IN_Y %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'predict_drvn_p1':
-                    logging.debug( "Found predict_drvn_p1 %s " %metrics_json[metric] )
+                if metric == 'COMPRESSOR_OUT_X':
+                    logging.debug( "Found COMPRESSOR_OUT_X %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'TURBINE_ID':
-                    logging.debug( "Found TURBINE_ID %s " %metrics_json[metric] )
+                if metric == 'COMPRESSOR_OUT_Y':
+                    logging.debug( "Found COMPRESSOR_OUT_Y %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'STEP':
-                    logging.debug( "Found STEP %s " %metrics_json[metric] )
+                if metric == 'DEVICEID':
+                    logging.debug( "Found DEVICEID %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'TEMP_X':
-                    logging.debug( "Found TEMP_X %s " %metrics_json[metric] )
+                if metric == 'DRVN_FLOW':
+                    logging.debug( "Found DRVN_FLOW %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'TEMP_Y':
-                    logging.debug( "Found TEMP_Y %s " %metrics_json[metric] )
+                if metric == 'DRVN_P1':
+                    logging.debug( "Found DRVN_P1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'PRESS_X':
-                    logging.debug( "Found PRESS_X %s " %metrics_json[metric] )
+                if metric == 'DRVN_P2':
+                    logging.debug( "Found DRVN_P2 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'predict_PRESS_X':
-                    logging.debug( "Found predict_PRESS_X %s " %metrics_json[metric] )
+                if metric == 'DRVN_T1':
+                    logging.debug( "Found DRVN_T1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'PRESS_Y':
-                    logging.debug( "Found PRESS_Y %s " %metrics_json[metric] )
+                if metric == 'DRVN_T2':
+                    logging.debug( "Found DRVN_T2 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'A_TEMP_X':
-                    logging.debug( "Found A_TEMP_X %s " %metrics_json[metric] )
+                if metric == 'DRVR_RPM':
+                    logging.debug( "Found DRVR_RPM %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'A_TEMP_Y':
-                    logging.debug( "Found A_TEMP_Y %s " %metrics_json[metric] )
+                if metric == 'ENTITY_ID':
+                    logging.debug( "Found ENTITY_ID %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'A_PRESS_X':
-                    logging.debug( "Found A_PRESS_X %s " %metrics_json[metric] )
+                if metric == 'MAINTENANCE_STATUS_Y':
+                    logging.debug( "Found MAINTENANCE_STATUS_Y %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'A_PRESS_Y':
-                    logging.debug( "Found A_PRESS_Y %s " %metrics_json[metric] )
+                if metric == 'MAINTENANCE_STATUS_X':
+                    logging.debug( "Found MAINTENANCE_STATUS_X %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'B_TEMP_X':
-                    logging.debug( "Found B_TEMP_X %s " %metrics_json[metric] )
+                if metric == 'PREDICT_DRVN_P1':
+                    logging.debug( "Found PREDICT_DRVN_P1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'B_TEMP_Y':
-                    logging.debug( "Found B_TEMP_Y %s " %metrics_json[metric] )
+                if metric == 'PREDICT_DRVN_P2':
+                    logging.debug( "Found PREDICT_DRVN_P2 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'B_PRESS_X':
-                    logging.debug( "Found B_PRESS_X %s " %metrics_json[metric] )
+                if metric == 'PREDICT_DRVN_T1':
+                    logging.debug( "Found PREDICT_DRVN_T1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'B_PRESS_Y':
-                    logging.debug( "Found B_PRESS_Y %s " %metrics_json[metric] )
+                if metric == 'PREDICT_DRVN_T2':
+                    logging.debug( "Found PREDICT_DRVN_T2 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'dim_business':
-                    logging.debug( "Found dim_business %s " %metrics_json[metric] )
+                if metric == 'RUN_STATUS':
+                    logging.debug( "Found RUN_STATUS %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'dim_site':
-                    logging.debug( "Found dim_site %s " %metrics_json[metric] )
+                if metric == 'RUN_STATUS_X':
+                    logging.debug( "Found RUN_STATUS_X %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
-                if metric == 'equipment_type':
-                    logging.debug( "Found equipment_type %s " %metrics_json[metric] )
+                if metric == 'RUN_STATUS_Y':
+                    logging.debug( "Found RUN_STATUS_Y %s " %metrics_json[metric] )
+                    net_metrics_data[metric] = metrics_json[metric]
+                if metric == 'SCHEDULED_MAINTENANCE':
+                    logging.debug( "Found SCHEDULED_MAINTENANCE %s " %metrics_json[metric] )
+                    net_metrics_data[metric] = metrics_json[metric]
+                if metric == 'UNSCHEDULED_MAINTENANCE':
+                    logging.debug( "Found UNSCHEDULED_MAINTENANCE %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
 
             logging.debug( "net_metrics_data %s " %net_metrics_data )
@@ -266,8 +272,8 @@ class TurbineHTTPPreload(BasePreload):
 
             #  There is a bug in Analytics service that required caps for attributes
             # convert sqlalchemy.sql.elements.quoted_name to a string.  May have been fixed
-            #metrics_uppercase_str =  m.casefold().upper()
-            metrics_uppercase_str = m.casefold().lower()
+            metrics_uppercase_str =  m.casefold().upper()
+            #metrics_uppercase_str = m.casefold().lower()
 
             logging.debug('metrics data m %s ' %metrics_uppercase_str )
             response_data[ m ] = np.array( metrics_json[ metrics_uppercase_str ] )
