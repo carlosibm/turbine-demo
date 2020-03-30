@@ -291,20 +291,20 @@ class TurbineHTTPPreload(BasePreload):
         Set dimensional data
         hardcode for now
         '''
-        response_data[ 'dim_business' ] =  ['Mariners Way MFG', 'Mariners Way MFG']
-        response_data[ 'dim_site' ] =  ['Production', 'Production']
-        response_data[ 'equipment_type' ] =  ['Line 1', 'Line 2']
+        response_data[ 'business' ] =  ['Australia', 'USA','Netherlands','Netherlands','Australia']
+        response_data[ 'site' ] =  ['FCCU', 'H-Oil', 'HTU2', 'HCU', 'FCCU'  ]
+        response_data[ 'equipment_type' ] =  ['Train', 'Train', 'Train', 'Train', 'Train']
 
         '''
         # Create Numpy array using remaining entity metrics
         '''
         #logging.debug("length metrics_drvn_t1 %d" %len(metrics_drvn_t1) )
         #logging.debug("length metrics_drvn_p1 %d" %len(metrics_drvn_p1) )
-        response_data['turbine_id'] = np.array( metrics_json['TURBINE_ID'] )
+        response_data['asset_id'] = np.array( metrics_json['ASSET_ID'] )
         #response_data['drvn_t1'] = np.array( metrics_drvn_t1 )
         #response_data['drvn_p1'] = np.array( metrics_drvn_p1 )
         #response_data['devicetype'] = np.array(metrics_TURBINE_ID)
-        response_data['deviceid'] = np.array( metrics_json['TURBINE_ID'] )
+        response_data['deviceid'] = np.array( metrics_json['ASSET_ID'] )
         #response_data['eventtype'] = np.array(metrics_TURBINE_ID)
         #response_data['turbine_id'] = np.array( metrics_json['TURBINE_ID'] )
         #response_data['format'] = np.array(metrics_TURBINE_ID)
@@ -333,7 +333,7 @@ class TurbineHTTPPreload(BasePreload):
             }
             entity_type.trace_append(created_by = self,
                                      msg = 'http data was missing columns. Adding values.',
-                                     log_method=logger.debug,
+                                     log_method=logging.debug,
                                      **kwargs)
             for m in missing_cols:
                 if m==entity_type._timestamp:
@@ -358,7 +358,7 @@ class TurbineHTTPPreload(BasePreload):
         logging.debug('DF write_frame to table ===' )
         entity_type.trace_append(created_by=self,
                                  msg='Wrote data to table',
-                                 log_method=logger.debug,
+                                 log_method=logging.debug,
                                  **kwargs)
         return True
 
