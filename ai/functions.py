@@ -265,8 +265,10 @@ class TurbineHTTPPreload(BasePreload):
             #logging.debug('metrics  json value -- %s ' %metrics_json[ m ] )
 
             #  There is a bug in Analytics service that required caps for attributes
-            # convert sqlalchemy.sql.elements.quoted_name to a string
-            metrics_uppercase_str =  m.casefold().upper()
+            # convert sqlalchemy.sql.elements.quoted_name to a string.  May have been fixed
+            #metrics_uppercase_str =  m.casefold().upper()
+            metrics_uppercase_str = m.casefold().lower()
+
             logging.debug('metrics data m %s ' %metrics_uppercase_str )
             response_data[ m ] = np.array( metrics_json[ metrics_uppercase_str ] )
             #logging.debug('metrics data %s ' %response_data[m.casefold().upper()) ])
