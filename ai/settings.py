@@ -23,7 +23,7 @@ def set_log_level(logger_level):
 
 
 # Configure Logging Default
-set_log_level(logging.ERROR)
+#set_log_level(logging.ERROR)
 
 # If on bluemix load env differently
 # Load Environment variables set via VCAP variables in Bluemix
