@@ -57,7 +57,7 @@ try:
 
     logging.info("Logging Set To: " + log_level_str)
 
-    if LOG_LEVEL != logging.WARNING:
+#    if LOG_LEVEL != logging.WARNING:
 #        set_log_level(LOG_LEVEL)
 except Exception as ex:
     template = 'Error: {0} Problem reading Logging Level string from environment variables. Logging set to WARNING LEVEL. Arguments: \n{1!r}'
