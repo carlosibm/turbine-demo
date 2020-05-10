@@ -25,7 +25,7 @@ EngineLogging.configure_console_logging(logging.DEBUG)
 
 # Specify the URL to your package here.
 # This URL must be accessible via pip install
-PACKAGE_URL = 'git+https://github.com/fe01134/turbine-demo@'
+PACKAGE_URL = 'git+https://github.com/fe01134/turbine-demo'
 
 
 class TurbineHTTPPreload(BasePreload):
