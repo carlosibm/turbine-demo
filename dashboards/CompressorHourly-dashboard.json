@@ -1,0 +1,651 @@
+{
+    "timeGrain": "hour",
+    "cards": [
+        {
+            "id": "card-device-table",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_flow",
+                        "id": "drvn_flow_id"
+                    },
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvr_rpm",
+                        "id": "drvr_rpm_id"
+                    }
+                ],
+                "range": {
+                    "type": "periodToDate",
+                    "count": -1,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour",
+                "groupBy": [
+                    "deviceid"
+                ]
+            },
+            "content": {
+                "columns": [
+                    {
+                        "dataSourceId": "deviceid",
+                        "label": "Asset id"
+                    },
+                    {
+                        "dataSourceId": "drvn_flow_id",
+                        "label": "drvn_flow"
+                    },
+                    {
+                        "dataSourceId": "drvr_rpm_id",
+                        "label": "drvr_rpm"
+                    }
+                ],
+                "thresholds": [
+                    {
+                        "dataSourceId": "drvn_flow_id",
+                        "comparison": "<",
+                        "value": 1000,
+                        "label": "Flow",
+                        "icon": "Warning--alt--filled",
+                        "color": "red",
+                        "severity": 1,
+                        "showSeverityLabel": false
+                    },
+                    {
+                        "dataSourceId": "drvn_flow_id",
+                        "comparison": ">",
+                        "value": 999,
+                        "label": "Flow",
+                        "icon": "Checkmark--filled",
+                        "color": "green",
+                        "severity": 1,
+                        "showSeverityLabel": false
+                    },
+                    {
+                        "dataSourceId": "drvr_rpm_id",
+                        "comparison": "<",
+                        "value": 1000,
+                        "label": "RPM",
+                        "icon": "Warning--alt--filled",
+                        "color": "red",
+                        "severity": 2,
+                        "showSeverityLabel": false
+                    },
+                    {
+                        "dataSourceId": "drvr_rpm_id",
+                        "comparison": ">",
+                        "value": 999,
+                        "label": "RPM",
+                        "icon": "Checkmark--filled",
+                        "color": "green",
+                        "severity": 2,
+                        "showSeverityLabel": false
+                    }
+                ]
+            },
+            "size": "LARGE",
+            "title": "Train Table",
+            "type": "TABLE"
+        },
+        {
+            "id": "timeseries_utilbydevice_card",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "mean",
+                        "attribute": "run_percent_per_hour",
+                        "id": "run_percent_per_hour_id"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour",
+                "groupBy": [
+                    "deviceid"
+                ]
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "run_percent_per_hour_id",
+                        "dataFilter": {
+                            "deviceid": "73002"
+                        },
+                        "label": "73002Device"
+                    },
+                    {
+                        "dataSourceId": "run_percent_per_hour_id",
+                        "dataFilter": {
+                            "deviceid": "73001"
+                        },
+                        "label": "73001Device"
+                    },
+                    {
+                        "dataSourceId": "run_percent_per_hour_id",
+                        "dataFilter": {
+                            "deviceid": "73002"
+                        },
+                        "label": "73002Device"
+                    },
+                    {
+                        "dataSourceId": "run_percent_per_hour_id",
+                        "dataFilter": {
+                            "deviceid": "73003"
+                        },
+                        "label": "73003Device"
+                    },
+                    {
+                        "dataSourceId": "run_percent_per_hour_id",
+                        "dataFilter": {
+                            "deviceid": "73004"
+                        },
+                        "label": "73004Device"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Percentage"
+            },
+            "size": "MEDIUM",
+            "title": "Run Status - Utilization per Hour per device",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "timeseries_utilization_hour_card",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "mean",
+                        "attribute": "run_percent_per_hour",
+                        "id": "run_percent_per_hour_id"
+                    }
+                ],
+                "range": {
+                    "count": -48,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "run_percent_per_hour_id",
+                        "label": "Mean"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Percentage"
+            },
+            "size": "MEDIUM",
+            "title": "Run Status - Utilization per Hour",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "timeseries_minutes_per_hour_card",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "sum",
+                        "attribute": "run_status",
+                        "id": "run_status_id"
+                    }
+                ],
+                "range": {
+                    "count": -48,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "run_status_id",
+                        "label": "Sum"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Drvn_flow"
+            },
+            "size": "MEDIUM",
+            "title": "Run Status - Minutes per Hour",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_p1-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "mean",
+                        "attribute": "drvn_p1_EquipmentHourly_mean",
+                        "id": "drvn_p1_EquipmentHourly_mean"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_p1_EquipmentHourly_mean",
+                        "label": "Mean"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Drvn_p1"
+            },
+            "size": "MEDIUM",
+            "title": "drvn_p1 - 1st Stage Inlet Pressure",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_p2-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "mean",
+                        "attribute": "drvn_p2_EquipmentHourly_mean",
+                        "id": "drvn_p2_EquipmentHourly_mean"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_p2_EquipmentHourly_mean",
+                        "label": "Mean"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Drvn_p2"
+            },
+            "size": "MEDIUM",
+            "title": "drvn_p2 - 1st Stage Outlet Pressure",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_t1-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "mean",
+                        "attribute": "drvn_t1_EquipmentHourly_mean",
+                        "id": "drvn_t1_EquipmentHourly_mean"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_t1_EquipmentHourly_mean",
+                        "label": "Mean"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Drvn_t1"
+            },
+            "size": "MEDIUM",
+            "title": "drvn_t1 - 1st Stage Inlet Temperature",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_t2-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "mean",
+                        "attribute": "drvn_t2_EquipmentHourly_mean",
+                        "id": "drvn_t2_EquipmentHourly_mean"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_t2_EquipmentHourly_mean",
+                        "label": "Mean"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Drvn_t2"
+            },
+            "size": "MEDIUM",
+            "title": "drvn_t2 - 1st Stage Outlet Temperature",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_flow-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "sum",
+                        "attribute": "drvn_flow_EquipmentHourly_sum",
+                        "id": "drvn_flow_EquipmentHourly_sum"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "hour"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_flow_EquipmentHourly_sum",
+                        "label": "Sum"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Drvn_flow"
+            },
+            "size": "MEDIUM",
+            "title": "drvn_flow - 1st Stage Discharge Flow",
+            "type": "TIMESERIES"
+        }
+    ],
+    "title": "EquipmentHourly",
+    "layouts": {
+        "max": [
+            {
+                "i": "card-device-table",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilbydevice_card",
+                "x": 8,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilization_hour_card",
+                "x": 12,
+                "y": 0
+            },
+            {
+                "i": "timeseries_minutes_per_hour_card",
+                "x": 8,
+                "y": 2
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 12,
+                "y": 2
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 4,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 8,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 12,
+                "y": 4
+            }
+        ],
+        "xl": [
+            {
+                "i": "card-device-table",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilbydevice_card",
+                "x": 8,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilization_hour_card",
+                "x": 12,
+                "y": 0
+            },
+            {
+                "i": "timeseries_minutes_per_hour_card",
+                "x": 8,
+                "y": 2
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 12,
+                "y": 2
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 4,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 8,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 12,
+                "y": 4
+            }
+        ],
+        "lg": [
+            {
+                "i": "card-device-table",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilbydevice_card",
+                "x": 8,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilization_hour_card",
+                "x": 12,
+                "y": 0
+            },
+            {
+                "i": "timeseries_minutes_per_hour_card",
+                "x": 8,
+                "y": 2
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 12,
+                "y": 2
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 4,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 8,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 12,
+                "y": 4
+            }
+        ],
+        "md": [
+            {
+                "i": "card-device-table",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilbydevice_card",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "timeseries_utilization_hour_card",
+                "x": 4,
+                "y": 4
+            },
+            {
+                "i": "timeseries_minutes_per_hour_card",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 4,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 4,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 4,
+                "y": 10
+            }
+        ],
+        "sm": [
+            {
+                "i": "card-device-table",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilbydevice_card",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "timeseries_utilization_hour_card",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "timeseries_minutes_per_hour_card",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 12
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 0,
+                "y": 14
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 0,
+                "y": 16
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 0,
+                "y": 18
+            }
+        ],
+        "xs": [
+            {
+                "i": "card-device-table",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "timeseries_utilbydevice_card",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "timeseries_utilization_hour_card",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "timeseries_minutes_per_hour_card",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 12
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 0,
+                "y": 14
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 0,
+                "y": 16
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 0,
+                "y": 18
+            }
+        ]
+    }
+}

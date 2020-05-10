@@ -1,0 +1,2196 @@
+{
+    "timeGrain": "hour",
+    "cards": [
+        {
+            "id": "alerts",
+            "size": "LARGE",
+            "title": "Alerts in the last 24 hours",
+            "type": "ALERT",
+            "dataSource": {
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "type": "alert"
+            }
+        },
+        {
+            "id": "site",
+            "size": "MEDIUMTHIN",
+            "title": "Train Info",
+            "type": "VALUE",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "Site",
+                        "id": "Site"
+                    },
+                    {
+                        "attribute": "Business",
+                        "id": "Business"
+                    },
+                    {
+                        "attribute": "Train",
+                        "id": "Train"
+                    }
+                ]
+            },
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "Site",
+                        "label": "Site"
+                    },
+                    {
+                        "dataSourceId": "Business",
+                        "label": "Business"
+                    },
+                    {
+                        "dataSourceId": "Train",
+                        "label": "Train"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "drvr_rpm_value_card",
+            "size": "MEDIUMTHIN",
+            "title": "drvr_rpm - Shaft Speed",
+            "type": "VALUE",
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvr_rpm_id_last",
+                        "label": "Latest",
+                        "precision": 2,
+                        "thresholds": [
+                            {
+                                "color": "#F1C21B",
+                                "comparison": "<",
+                                "icon": "Warning--alt--filled",
+                                "value": 1000
+                            },
+                            {
+                                "color": "#24A148",
+                                "comparison": ">",
+                                "icon": "Checkmark--filled",
+                                "value": 1000
+                            }
+                        ]
+                    },
+                    {
+                        "dataSourceId": "drvr_rpm_id_min",
+                        "label": "Minimum",
+                        "precision": 2
+                    },
+                    {
+                        "dataSourceId": "drvr_rpm_id_max",
+                        "label": "Maximum",
+                        "precision": 2
+                    }
+                ]
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvr_rpm",
+                        "id": "drvr_rpm_id_last"
+                    },
+                    {
+                        "aggregator": "min",
+                        "attribute": "drvr_rpm",
+                        "id": "drvr_rpm_id_min"
+                    },
+                    {
+                        "aggregator": "max",
+                        "attribute": "drvr_rpm",
+                        "id": "drvr_rpm_id_max"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "card-drvr_rpm-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvr_rpm",
+                        "id": "drvr_rpm_id"
+                    },
+                    {
+                        "attribute": "limit_drvr_rpm_max",
+                        "id": "limit_drvr_rpm_max_id"
+                    },
+                    {
+                        "attribute": "limit_drvr_rpm_min",
+                        "id": "limit_drvr_rpm_min_id"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvr_rpm_id",
+                        "label": "RPM"
+                    },
+                    {
+                        "dataSourceId": "limit_drvr_rpm_max_id",
+                        "label": "Max"
+                    },
+                    {
+                        "dataSourceId": "limit_drvr_rpm_min_id",
+                        "label": "Threshold"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "RPM"
+            },
+            "size": "MEDIUM",
+            "title": "drvr_rpm - Shaft Speed Actual",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "drvn_flow_value_card",
+            "size": "MEDIUMTHIN",
+            "title": "drvn_flow - 1st Stage Discharge Flow",
+            "type": "VALUE",
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_flow_id_last",
+                        "label": "Latest",
+                        "precision": 2,
+                        "thresholds": [
+                            {
+                                "color": "#F1C21B",
+                                "comparison": "<",
+                                "icon": "Warning--alt--filled",
+                                "value": 1000
+                            },
+                            {
+                                "color": "#24A148",
+                                "comparison": ">",
+                                "icon": "Checkmark--filled",
+                                "value": 999
+                            }
+                        ]
+                    },
+                    {
+                        "dataSourceId": "drvn_flow_id_min",
+                        "label": "Minimum",
+                        "precision": 2
+                    },
+                    {
+                        "dataSourceId": "drvn_flow_id_max",
+                        "label": "Maximum",
+                        "precision": 3
+                    }
+                ]
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_flow",
+                        "id": "drvn_flow_id_last"
+                    },
+                    {
+                        "aggregator": "min",
+                        "attribute": "drvn_flow",
+                        "id": "drvn_flow_id_min"
+                    },
+                    {
+                        "aggregator": "max",
+                        "attribute": "drvn_flow",
+                        "id": "drvn_flow_id_max"
+                    },
+                    {
+                        "attribute": "limit_drvr_rpm_min",
+                        "id": "limit_drvr_rpm_min_id"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "card-drvn_flow-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_flow",
+                        "id": "drvn_flow"
+                    },
+                    {
+                        "attribute": "limit_drvn_flow_max",
+                        "id": "limit_drvn_flow_max_id"
+                    },
+                    {
+                        "attribute": "limit_drvr_rpm_min",
+                        "id": "limit_drvr_rpm_min_id"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_flow",
+                        "label": "m3 per Min"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_flow_max_id",
+                        "label": "Max"
+                    },
+                    {
+                        "dataSourceId": "limit_drvr_rpm_min_id",
+                        "label": "Threshold"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "m3 per Min"
+            },
+            "size": "MEDIUM",
+            "title": "drvn_flow - Drive Flow Actual",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "drvn_p1_value_card",
+            "size": "MEDIUMTHIN",
+            "title": "drvn_p1 - 1st Stage Inlet Pressure",
+            "type": "VALUE",
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_p1_id_last",
+                        "label": "Latest",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_p1_id_min",
+                        "label": "Minimum",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_p1_id_max",
+                        "label": "Maximum",
+                        "precision": 3
+                    }
+                ]
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1_id_last"
+                    },
+                    {
+                        "aggregator": "min",
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1_id_min"
+                    },
+                    {
+                        "aggregator": "max",
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1_id_max"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "drvn_t1_value_card",
+            "size": "MEDIUMTHIN",
+            "title": "drvn_t1 - 1st Stage Inlet Temperature",
+            "type": "VALUE",
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_t1_id_last",
+                        "label": "Latest",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_t1_id_min",
+                        "label": "Minimum",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_t1_id_max",
+                        "label": "Maximum",
+                        "precision": 3
+                    }
+                ]
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_t1",
+                        "id": "drvn_t1_id_last"
+                    },
+                    {
+                        "aggregator": "min",
+                        "attribute": "drvn_t1",
+                        "id": "drvn_t1_id_min"
+                    },
+                    {
+                        "aggregator": "max",
+                        "attribute": "drvn_t1",
+                        "id": "drvn_t1_id_max"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "drvn_t2_value_card",
+            "size": "MEDIUMTHIN",
+            "title": "drvn_t2 - 1st Stage Outlet Temperature",
+            "type": "VALUE",
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_t2_id_last",
+                        "label": "Latest",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_t2_id_min",
+                        "label": "Minimum",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_t2_id_max",
+                        "label": "Maximum",
+                        "precision": 3
+                    }
+                ]
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_t2",
+                        "id": "drvn_t2_id_last"
+                    },
+                    {
+                        "aggregator": "min",
+                        "attribute": "drvn_t2",
+                        "id": "drvn_t2_id_min"
+                    },
+                    {
+                        "aggregator": "max",
+                        "attribute": "drvn_t2",
+                        "id": "drvn_t2_id_max"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "card-drvn_p1-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_p1_max",
+                        "id": "limit_drvn_p1_max_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_p1_min",
+                        "id": "limit_drvn_p1_min_id"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_p1_id",
+                        "label": "Inlet"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_p1_max_id",
+                        "label": "Max"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_p1_min_id",
+                        "label": "Threshold"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Pressure"
+            },
+            "size": "MEDIUM",
+            "title": "Inlet Pressure - Actuals",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_p2-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_p2_max",
+                        "id": "limit_drvn_p2_max_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_p2_min",
+                        "id": "limit_drvn_p2_min_id"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_p2_id",
+                        "label": "Inlet"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_p2_max_id",
+                        "label": "Max"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_p2_min_id",
+                        "label": "Threshold"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Pressure"
+            },
+            "size": "MEDIUM",
+            "title": "Outlet Pressure - Actuals",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_t1-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_t1",
+                        "id": "drvn_t1_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_t1_max",
+                        "id": "limit_drvn_t1_max_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_t1_min",
+                        "id": "limit_drvn_t1_min_id"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_t1_id",
+                        "label": "Inlet"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_t1_max_id",
+                        "label": "Max"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_t1_min_id",
+                        "label": "Threshold"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Temperature"
+            },
+            "size": "MEDIUM",
+            "title": "Inlet Temperature - Actuals",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-drvn_t2-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_t2",
+                        "id": "drvn_t2_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_t2_max",
+                        "id": "limit_drvn_t2_max_id"
+                    },
+                    {
+                        "attribute": "limit_drvn_t2_min",
+                        "id": "limit_drvn_t2_min_id"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_t2_id",
+                        "label": "Inlet"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_t2_max_id",
+                        "label": "Max"
+                    },
+                    {
+                        "dataSourceId": "limit_drvn_t2_min_id",
+                        "label": "Threshold"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Temperature"
+            },
+            "size": "MEDIUM",
+            "title": "Outlet Temperature - Actuals",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "drvn_p2_value_card",
+            "size": "MEDIUMTHIN",
+            "title": "drvn_p2 - 1st Stage Outlet Pressure",
+            "type": "VALUE",
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_p2_id_last",
+                        "label": "Latest",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_p2_id_min",
+                        "label": "Minimum",
+                        "precision": 3
+                    },
+                    {
+                        "dataSourceId": "drvn_p2_id_max",
+                        "label": "Maximum",
+                        "precision": 3
+                    }
+                ]
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2_id_last"
+                    },
+                    {
+                        "aggregator": "min",
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2_id_min"
+                    },
+                    {
+                        "aggregator": "max",
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2_id_max"
+                    }
+                ]
+            }
+        },
+        {
+            "content": {
+                "alt": "Compressor 1 Outlet Monitoring",
+                "zoomMax": 1,
+                "hotspots": [
+                    {
+                        "content": {
+                            "title": "Inlet",
+                            "description": "Compressor 1",
+                            "attributes": [
+                                {
+                                    "dataSourceId": "drvn_p2",
+                                    "label": "Pressure",
+                                    "unit": "PSI"
+                                },
+                                {
+                                    "dataSourceId": "drvn_t2",
+                                    "label": "Temperature",
+                                    "unit": "C"
+                                }
+                            ]
+                        },
+                        "locations": [
+                            {
+                                "x": "55",
+                                "y": "55"
+                            }
+                        ],
+                        "thresholds": [
+                            {
+                                "color": "red",
+                                "comparison": ">=",
+                                "dataSourceId": "drvn_p2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 15000
+                            },
+                            {
+                                "color": "green",
+                                "comparison": ">",
+                                "dataSourceId": "drvn_p2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            },
+                            {
+                                "color": "yellow",
+                                "comparison": "<=",
+                                "dataSourceId": "drvn_p2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            },
+                            {
+                                "color": "red",
+                                "comparison": ">=",
+                                "dataSourceId": "drvn_t2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 80
+                            },
+                            {
+                                "color": "green",
+                                "comparison": ">",
+                                "dataSourceId": "drvn_t2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 40
+                            },
+                            {
+                                "color": "yellow",
+                                "comparison": "<=",
+                                "dataSourceId": "drvn_t2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 20
+                            }
+                        ]
+                    },
+                    {
+                        "content": {
+                            "title": "Outlet",
+                            "description": "Compressor 1",
+                            "attributes": [
+                                {
+                                    "dataSourceId": "drvn_p1",
+                                    "label": "Pressure",
+                                    "unit": "PSI"
+                                },
+                                {
+                                    "dataSourceId": "drvn_t1",
+                                    "label": "Temperature",
+                                    "unit": "C"
+                                }
+                            ]
+                        },
+                        "locations": [
+                            {
+                                "x": "80",
+                                "y": "55"
+                            }
+                        ],
+                        "thresholds": [
+                            {
+                                "color": "red",
+                                "comparison": ">=",
+                                "dataSourceId": "drvn_p1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 15000
+                            },
+                            {
+                                "color": "green",
+                                "comparison": ">",
+                                "dataSourceId": "drvn_p1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            },
+                            {
+                                "color": "yellow",
+                                "comparison": "<=",
+                                "dataSourceId": "drvn_p1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            },
+                            {
+                                "color": "red",
+                                "comparison": ">=",
+                                "dataSourceId": "drvn_t1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 80
+                            },
+                            {
+                                "color": "green",
+                                "comparison": ">",
+                                "dataSourceId": "drvn_t1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 40
+                            },
+                            {
+                                "color": "yellow",
+                                "comparison": "<=",
+                                "dataSourceId": "drvn_t1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 20
+                            }
+                        ]
+                    }
+                ],
+                "image": "train"
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1"
+                    },
+                    {
+                        "attribute": "drvn_t1",
+                        "id": "drvn_t1"
+                    },
+                    {
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2"
+                    },
+                    {
+                        "attribute": "drvn_t2",
+                        "id": "drvn_t2"
+                    },
+                    {
+                        "attribute": "compressor_in_y",
+                        "id": "compressor_in_y"
+                    },
+                    {
+                        "attribute": "compressor_in_x",
+                        "id": "compressor_in_x"
+                    }
+                ],
+                "range": {
+                    "count": -1,
+                    "interval": "hour",
+                    "type": "periodToDate"
+                }
+            },
+            "id": "train",
+            "size": "LARGE",
+            "title": "Train Level 1 Monitoring",
+            "type": "IMAGE"
+        },
+        {
+            "content": {
+                "alt": "Level 1 Monitoring",
+                "zoomMax": 1,
+                "hotspots": [
+                    {
+                        "color": "#FFF",
+                        "content": {
+                            "attributes": [
+                                {
+                                    "dataSourceId": "drvn_p1",
+                                    "label": "Inlet Pressure",
+                                    "unit": "PSI"
+                                },
+                                {
+                                    "dataSourceId": "drvn_p2",
+                                    "label": "Outlet Pressure",
+                                    "unit": "PSI"
+                                }
+                            ]
+                        },
+                        "locations": [
+                            {
+                                "xDataSourceId": "compressor_in_x_factor",
+                                "yDataSourceId": "compressor_in_y_factor",
+                                "dataFilter": {
+                                    "deviceid": "deviceid"
+                                }
+                            }
+                        ],
+                        "thresholds": [
+                            {
+                                "color": "red",
+                                "comparison": ">=",
+                                "dataSourceId": "drvn_p1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 15000
+                            },
+                            {
+                                "color": "green",
+                                "comparison": ">",
+                                "dataSourceId": "drvn_p1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            },
+                            {
+                                "color": "yellow",
+                                "comparison": "<=",
+                                "dataSourceId": "drvn_p1",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            },
+                            {
+                                "color": "red",
+                                "comparison": ">=",
+                                "dataSourceId": "drvn_p2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 15000
+                            },
+                            {
+                                "color": "green",
+                                "comparison": ">",
+                                "dataSourceId": "drvn_p2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            },
+                            {
+                                "color": "yellow",
+                                "comparison": "<=",
+                                "dataSourceId": "drvn_p2",
+                                "icon": "icon--close--solid",
+                                "isHotspot": true,
+                                "value": 10000
+                            }
+                        ]
+                    }
+                ],
+                "image": "compressor_flow_range2"
+            },
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1"
+                    },
+                    {
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2"
+                    },
+                    {
+                        "attribute": "compressor_in_y_factor",
+                        "id": "compressor_in_y_factor"
+                    },
+                    {
+                        "attribute": "compressor_in_x_factor",
+                        "id": "compressor_in_x_factor"
+                    }
+                ],
+                "range": {
+                    "count": -1,
+                    "interval": "hour",
+                    "type": "periodToDate"
+                },
+                "groupBy": [
+                    "deviceid"
+                ]
+            },
+            "id": "compressor_flow_range2",
+            "size": "LARGE",
+            "title": "Polytropic Head. (ft * lb-f? /  lb m) vs Flow  ",
+            "type": "IMAGE"
+        },
+        {
+            "id": "card-FLOW-value",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_flow",
+                        "id": "drvn_flow"
+                    }
+                ]
+            },
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_flow",
+                        "label": "Flow",
+                        "precision": 2,
+                        "thresholds": [
+                            {
+                                "color": "#F1C21B",
+                                "comparison": "<",
+                                "icon": "Warning--alt--filled",
+                                "value": 1000
+                            },
+                            {
+                                "color": "#24A148",
+                                "comparison": ">",
+                                "icon": "Checkmark--filled",
+                                "value": 999
+                            }
+                        ]
+                    }
+                ]
+            },
+            "size": "SMALL",
+            "title": "Flow",
+            "type": "VALUE"
+        },
+        {
+            "id": "card-INLETPRESSURE-value",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1_id"
+                    }
+                ]
+            },
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_p1_id",
+                        "label": "Pressure",
+                        "thresholds": [
+                            {
+                                "color": "#F1C21B",
+                                "comparison": "<",
+                                "icon": "Warning--alt--filled",
+                                "value": 2
+                            },
+                            {
+                                "color": "#24A148",
+                                "comparison": ">",
+                                "icon": "Checkmark--filled",
+                                "value": 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            "size": "SMALL",
+            "title": "Inlet Pressure",
+            "type": "VALUE"
+        },
+        {
+            "id": "card-OUTLETPRESSURE-value",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2_id"
+                    }
+                ]
+            },
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_p2_id",
+                        "label": "Pressure",
+                        "thresholds": [
+                            {
+                                "color": "#F1C21B",
+                                "comparison": "<",
+                                "icon": "Warning--alt--filled",
+                                "value": 50
+                            },
+                            {
+                                "color": "#24A148",
+                                "comparison": ">",
+                                "icon": "Checkmark--filled",
+                                "value": 49
+                            }
+                        ]
+                    }
+                ]
+            },
+            "size": "SMALL",
+            "title": "Outlet Pressure",
+            "type": "VALUE"
+        },
+        {
+            "id": "card-Temperature-value",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_t2",
+                        "id": "drvn_t2"
+                    }
+                ]
+            },
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_t2",
+                        "label": "Outlet Temperature",
+                        "thresholds": [
+                            {
+                                "color": "#F1C21B",
+                                "comparison": "<",
+                                "icon": "Warning--alt--filled",
+                                "value": 150
+                            },
+                            {
+                                "color": "#24A148",
+                                "comparison": ">",
+                                "icon": "Checkmark--filled",
+                                "value": 149
+                            }
+                        ]
+                    }
+                ]
+            },
+            "size": "SMALL",
+            "title": "Outlet Temperature",
+            "type": "VALUE"
+        },
+        {
+            "id": "card-TemperatureT1-value",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "drvn_t1",
+                        "id": "drvn_t1"
+                    }
+                ]
+            },
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "drvn_t1",
+                        "label": "Inlet Temperature",
+                        "thresholds": [
+                            {
+                                "color": "#F1C21B",
+                                "comparison": "<",
+                                "icon": "Warning--alt--filled",
+                                "value": 50
+                            },
+                            {
+                                "color": "#24A148",
+                                "comparison": ">",
+                                "icon": "Checkmark--filled",
+                                "value": 49
+                            }
+                        ]
+                    }
+                ]
+            },
+            "size": "SMALL",
+            "title": "Inlet Temperature",
+            "type": "VALUE"
+        },
+        {
+            "id": "card-TURBINE_ID-value",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "aggregator": "last",
+                        "attribute": "status",
+                        "id": "status"
+                    }
+                ]
+            },
+            "content": {
+                "attributes": [
+                    {
+                        "dataSourceId": "status",
+                        "label": "Availability",
+                        "thresholds": [
+                            {
+                                "color": "#24A148",
+                                "comparison": "=",
+                                "icon": "Checkmark--filled",
+                                "value": "Online"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "size": "SMALL",
+            "title": "Run Status",
+            "type": "VALUE"
+        },
+        {
+            "id": "card-OutletTEMPERATURE-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_t2",
+                        "id": "drvn_t2"
+                    },
+                    {
+                        "attribute": "predict_drvn_t2",
+                        "id": "predict_drvn_t2"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "additionalData": {
+                    "type": "alert",
+                    "dataFilter": {
+                        "name": [
+                            "multivariate_isolation_alert",
+                            "IsolationForestModelAlert",
+                            "multivariate_isolation_alert2",
+                            "multivariate_isolation_simple_alert"
+                        ]
+                    }
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_t2",
+                        "label": "Temperature C"
+                    },
+                    {
+                        "dataSourceId": "predict_drvn_t2",
+                        "label": "Inlet Predicted Temperature"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Temperature C"
+            },
+            "size": "LARGE",
+            "title": "Compressor Temperature Outlet",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-InletTEMPERATURE-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_t1",
+                        "id": "drvn_t1"
+                    },
+                    {
+                        "attribute": "predict_drvn_t1",
+                        "id": "predict_drvn_t1"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "additionalData": {
+                    "type": "alert",
+                    "dataFilter": {
+                        "name": [
+                            "multivariate_isolation_alert",
+                            "IsolationForestModelAlert",
+                            "multivariate_isolation_alert2",
+                            "multivariate_isolation_simple_alert"
+                        ]
+                    }
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_t1",
+                        "label": "Temperature C"
+                    },
+                    {
+                        "dataSourceId": "predict_drvn_t1",
+                        "label": "Inlet Predicted Temperature"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Temperature C"
+            },
+            "size": "LARGE",
+            "title": "Compressor Temperature Inlet",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-InletPRESSURE-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_p1",
+                        "id": "drvn_p1"
+                    },
+                    {
+                        "attribute": "predict_drvn_p1",
+                        "id": "predict_drvn_p1"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "additionalData": {
+                    "type": "alert",
+                    "dataFilter": {
+                        "name": [
+                            "multivariate_isolation_alert",
+                            "IsolationForestModelAlert",
+                            "multivariate_isolation_alert2",
+                            "multivariate_isolation_simple_alert"
+                        ]
+                    }
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_p1",
+                        "label": "Inlet PSI"
+                    },
+                    {
+                        "dataSourceId": "predict_drvn_p1",
+                        "label": "Inlet Predicted PSI"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Head PSI"
+            },
+            "size": "LARGE",
+            "title": "Compressor Pressure Head Inlet",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-outletPRESSURE-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "drvn_p2",
+                        "id": "drvn_p2"
+                    },
+                    {
+                        "attribute": "predict_drvn_p2",
+                        "id": "predict_drvn_p2"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "additionalData": {
+                    "type": "alert",
+                    "dataFilter": {
+                        "name": [
+                            "multivariate_isolation_alert",
+                            "IsolationForestModelAlert",
+                            "multivariate_isolation_alert2",
+                            "multivariate_isolation_simple_alert"
+                        ]
+                    }
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "drvn_p2",
+                        "label": "Outlet PSI"
+                    },
+                    {
+                        "dataSourceId": "predict_drvn_p2",
+                        "label": "Outlet Predicted PSI"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Head PSI"
+            },
+            "size": "LARGE",
+            "title": "Compressor Pressure Head Outlet",
+            "type": "TIMESERIES"
+        },
+        {
+            "id": "card-RUN_STATU-timeseries",
+            "dataSource": {
+                "attributes": [
+                    {
+                        "attribute": "run_status",
+                        "id": "run_status"
+                    }
+                ],
+                "range": {
+                    "count": -24,
+                    "interval": "hour"
+                },
+                "timeGrain": "day"
+            },
+            "content": {
+                "series": [
+                    {
+                        "dataSourceId": "run_status",
+                        "label": "Mins Run"
+                    }
+                ],
+                "xLabel": "Time",
+                "yLabel": "Mins Run"
+            },
+            "size": "LARGE",
+            "title": "Mins Run Every 5 Minutes",
+            "type": "TIMESERIES"
+        }
+    ],
+    "title": "Train Compressor Monitoring and Health",
+    "layouts": {
+        "max": [
+            {
+                "i": "alerts",
+                "x": 4,
+                "y": 0
+            },
+            {
+                "i": "site",
+                "x": 2,
+                "y": 0
+            },
+            {
+                "i": "drvr_rpm_value_card",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "card-drvr_rpm-timeseries",
+                "x": 2,
+                "y": 4
+            },
+            {
+                "i": "drvn_flow_value_card",
+                "x": 6,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 8,
+                "y": 4
+            },
+            {
+                "i": "drvn_p1_value_card",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "drvn_t1_value_card",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "drvn_t2_value_card",
+                "x": 6,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 2,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 8,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 2,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 8,
+                "y": 6
+            },
+            {
+                "i": "drvn_p2_value_card",
+                "x": 6,
+                "y": 8
+            },
+            {
+                "i": "train",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "compressor_flow_range2",
+                "x": 8,
+                "y": 10
+            },
+            {
+                "i": "card-FLOW-value",
+                "x": 0,
+                "y": 1
+            },
+            {
+                "i": "card-INLETPRESSURE-value",
+                "x": 0,
+                "y": 3
+            },
+            {
+                "i": "card-OUTLETPRESSURE-value",
+                "x": 2,
+                "y": 3
+            },
+            {
+                "i": "card-Temperature-value",
+                "x": 2,
+                "y": 2
+            },
+            {
+                "i": "card-TemperatureT1-value",
+                "x": 0,
+                "y": 2
+            },
+            {
+                "i": "card-TURBINE_ID-value",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "card-OutletTEMPERATURE-timeseries",
+                "x": 8,
+                "y": 14
+            },
+            {
+                "i": "card-InletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 14
+            },
+            {
+                "i": "card-InletPRESSURE-timeseries",
+                "x": 8,
+                "y": 18
+            },
+            {
+                "i": "card-outletPRESSURE-timeseries",
+                "x": 0,
+                "y": 18
+            },
+            {
+                "i": "card-RUN_STATU-timeseries",
+                "x": 8,
+                "y": 22
+            }
+        ],
+        "xl": [
+            {
+                "i": "alerts",
+                "x": 4,
+                "y": 0
+            },
+            {
+                "i": "site",
+                "x": 2,
+                "y": 0
+            },
+            {
+                "i": "drvr_rpm_value_card",
+                "x": 6,
+                "y": 4
+            },
+            {
+                "i": "card-drvr_rpm-timeseries",
+                "x": 8,
+                "y": 4
+            },
+            {
+                "i": "drvn_flow_value_card",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 2,
+                "y": 4
+            },
+            {
+                "i": "drvn_p1_value_card",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "drvn_t1_value_card",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "drvn_t2_value_card",
+                "x": 6,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 2,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 8,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 2,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 8,
+                "y": 8
+            },
+            {
+                "i": "drvn_p2_value_card",
+                "x": 6,
+                "y": 8
+            },
+            {
+                "i": "train",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "compressor_flow_range2",
+                "x": 8,
+                "y": 10
+            },
+            {
+                "i": "card-FLOW-value",
+                "x": 0,
+                "y": 1
+            },
+            {
+                "i": "card-INLETPRESSURE-value",
+                "x": 0,
+                "y": 3
+            },
+            {
+                "i": "card-OUTLETPRESSURE-value",
+                "x": 2,
+                "y": 3
+            },
+            {
+                "i": "card-Temperature-value",
+                "x": 2,
+                "y": 2
+            },
+            {
+                "i": "card-TemperatureT1-value",
+                "x": 0,
+                "y": 2
+            },
+            {
+                "i": "card-TURBINE_ID-value",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "card-OutletTEMPERATURE-timeseries",
+                "x": 8,
+                "y": 14
+            },
+            {
+                "i": "card-InletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 14
+            },
+            {
+                "i": "card-InletPRESSURE-timeseries",
+                "x": 8,
+                "y": 18
+            },
+            {
+                "i": "card-outletPRESSURE-timeseries",
+                "x": 0,
+                "y": 18
+            },
+            {
+                "i": "card-RUN_STATU-timeseries",
+                "x": 8,
+                "y": 22
+            }
+        ],
+        "lg": [
+            {
+                "i": "alerts",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "site",
+                "x": 8,
+                "y": 0
+            },
+            {
+                "i": "drvr_rpm_value_card",
+                "x": 12,
+                "y": 0
+            },
+            {
+                "i": "card-drvr_rpm-timeseries",
+                "x": 8,
+                "y": 2
+            },
+            {
+                "i": "drvn_flow_value_card",
+                "x": 12,
+                "y": 2
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "drvn_p1_value_card",
+                "x": 4,
+                "y": 4
+            },
+            {
+                "i": "drvn_t1_value_card",
+                "x": 8,
+                "y": 4
+            },
+            {
+                "i": "drvn_t2_value_card",
+                "x": 12,
+                "y": 4
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 4,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 8,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 12,
+                "y": 6
+            },
+            {
+                "i": "drvn_p2_value_card",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "train",
+                "x": 4,
+                "y": 8
+            },
+            {
+                "i": "compressor_flow_range2",
+                "x": 0,
+                "y": 12
+            },
+            {
+                "i": "card-FLOW-value",
+                "x": 8,
+                "y": 12
+            },
+            {
+                "i": "card-INLETPRESSURE-value",
+                "x": 12,
+                "y": 8
+            },
+            {
+                "i": "card-OUTLETPRESSURE-value",
+                "x": 8,
+                "y": 13
+            },
+            {
+                "i": "card-Temperature-value",
+                "x": 12,
+                "y": 9
+            },
+            {
+                "i": "card-TemperatureT1-value",
+                "x": 8,
+                "y": 14
+            },
+            {
+                "i": "card-TURBINE_ID-value",
+                "x": 12,
+                "y": 10
+            },
+            {
+                "i": "card-OutletTEMPERATURE-timeseries",
+                "x": 8,
+                "y": 15
+            },
+            {
+                "i": "card-InletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 16
+            },
+            {
+                "i": "card-InletPRESSURE-timeseries",
+                "x": 8,
+                "y": 19
+            },
+            {
+                "i": "card-outletPRESSURE-timeseries",
+                "x": 0,
+                "y": 20
+            },
+            {
+                "i": "card-RUN_STATU-timeseries",
+                "x": 8,
+                "y": 23
+            }
+        ],
+        "md": [
+            {
+                "i": "alerts",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "site",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "drvr_rpm_value_card",
+                "x": 2,
+                "y": 4
+            },
+            {
+                "i": "card-drvr_rpm-timeseries",
+                "x": 4,
+                "y": 4
+            },
+            {
+                "i": "drvn_flow_value_card",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 2,
+                "y": 6
+            },
+            {
+                "i": "drvn_p1_value_card",
+                "x": 6,
+                "y": 6
+            },
+            {
+                "i": "drvn_t1_value_card",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "drvn_t2_value_card",
+                "x": 2,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 4,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 4,
+                "y": 10
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 0,
+                "y": 12
+            },
+            {
+                "i": "drvn_p2_value_card",
+                "x": 4,
+                "y": 12
+            },
+            {
+                "i": "train",
+                "x": 0,
+                "y": 14
+            },
+            {
+                "i": "compressor_flow_range2",
+                "x": 0,
+                "y": 18
+            },
+            {
+                "i": "card-FLOW-value",
+                "x": 0,
+                "y": 22
+            },
+            {
+                "i": "card-INLETPRESSURE-value",
+                "x": 4,
+                "y": 22
+            },
+            {
+                "i": "card-OUTLETPRESSURE-value",
+                "x": 0,
+                "y": 23
+            },
+            {
+                "i": "card-Temperature-value",
+                "x": 4,
+                "y": 23
+            },
+            {
+                "i": "card-TemperatureT1-value",
+                "x": 0,
+                "y": 24
+            },
+            {
+                "i": "card-TURBINE_ID-value",
+                "x": 4,
+                "y": 24
+            },
+            {
+                "i": "card-OutletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 25
+            },
+            {
+                "i": "card-InletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 29
+            },
+            {
+                "i": "card-InletPRESSURE-timeseries",
+                "x": 0,
+                "y": 33
+            },
+            {
+                "i": "card-outletPRESSURE-timeseries",
+                "x": 0,
+                "y": 37
+            },
+            {
+                "i": "card-RUN_STATU-timeseries",
+                "x": 0,
+                "y": 41
+            }
+        ],
+        "sm": [
+            {
+                "i": "alerts",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "site",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "drvr_rpm_value_card",
+                "x": 2,
+                "y": 4
+            },
+            {
+                "i": "card-drvr_rpm-timeseries",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "drvn_flow_value_card",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "drvn_p1_value_card",
+                "x": 0,
+                "y": 12
+            },
+            {
+                "i": "drvn_t1_value_card",
+                "x": 2,
+                "y": 12
+            },
+            {
+                "i": "drvn_t2_value_card",
+                "x": 0,
+                "y": 14
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 0,
+                "y": 16
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 18
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 0,
+                "y": 20
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 0,
+                "y": 22
+            },
+            {
+                "i": "drvn_p2_value_card",
+                "x": 0,
+                "y": 24
+            },
+            {
+                "i": "train",
+                "x": 0,
+                "y": 26
+            },
+            {
+                "i": "compressor_flow_range2",
+                "x": 0,
+                "y": 30
+            },
+            {
+                "i": "card-FLOW-value",
+                "x": 0,
+                "y": 34
+            },
+            {
+                "i": "card-INLETPRESSURE-value",
+                "x": 2,
+                "y": 34
+            },
+            {
+                "i": "card-OUTLETPRESSURE-value",
+                "x": 0,
+                "y": 35
+            },
+            {
+                "i": "card-Temperature-value",
+                "x": 2,
+                "y": 35
+            },
+            {
+                "i": "card-TemperatureT1-value",
+                "x": 0,
+                "y": 36
+            },
+            {
+                "i": "card-TURBINE_ID-value",
+                "x": 2,
+                "y": 36
+            },
+            {
+                "i": "card-OutletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 37
+            },
+            {
+                "i": "card-InletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 41
+            },
+            {
+                "i": "card-InletPRESSURE-timeseries",
+                "x": 0,
+                "y": 45
+            },
+            {
+                "i": "card-outletPRESSURE-timeseries",
+                "x": 0,
+                "y": 49
+            },
+            {
+                "i": "card-RUN_STATU-timeseries",
+                "x": 0,
+                "y": 53
+            }
+        ],
+        "xs": [
+            {
+                "i": "alerts",
+                "x": 0,
+                "y": 0
+            },
+            {
+                "i": "site",
+                "x": 0,
+                "y": 4
+            },
+            {
+                "i": "drvr_rpm_value_card",
+                "x": 0,
+                "y": 6
+            },
+            {
+                "i": "card-drvr_rpm-timeseries",
+                "x": 0,
+                "y": 8
+            },
+            {
+                "i": "drvn_flow_value_card",
+                "x": 0,
+                "y": 10
+            },
+            {
+                "i": "card-drvn_flow-timeseries",
+                "x": 0,
+                "y": 12
+            },
+            {
+                "i": "drvn_p1_value_card",
+                "x": 0,
+                "y": 14
+            },
+            {
+                "i": "drvn_t1_value_card",
+                "x": 0,
+                "y": 16
+            },
+            {
+                "i": "drvn_t2_value_card",
+                "x": 0,
+                "y": 18
+            },
+            {
+                "i": "card-drvn_p1-timeseries",
+                "x": 0,
+                "y": 20
+            },
+            {
+                "i": "card-drvn_p2-timeseries",
+                "x": 0,
+                "y": 22
+            },
+            {
+                "i": "card-drvn_t1-timeseries",
+                "x": 0,
+                "y": 24
+            },
+            {
+                "i": "card-drvn_t2-timeseries",
+                "x": 0,
+                "y": 26
+            },
+            {
+                "i": "drvn_p2_value_card",
+                "x": 0,
+                "y": 28
+            },
+            {
+                "i": "train",
+                "x": 0,
+                "y": 30
+            },
+            {
+                "i": "compressor_flow_range2",
+                "x": 0,
+                "y": 34
+            },
+            {
+                "i": "card-FLOW-value",
+                "x": 0,
+                "y": 38
+            },
+            {
+                "i": "card-INLETPRESSURE-value",
+                "x": 0,
+                "y": 39
+            },
+            {
+                "i": "card-OUTLETPRESSURE-value",
+                "x": 0,
+                "y": 40
+            },
+            {
+                "i": "card-Temperature-value",
+                "x": 0,
+                "y": 41
+            },
+            {
+                "i": "card-TemperatureT1-value",
+                "x": 0,
+                "y": 42
+            },
+            {
+                "i": "card-TURBINE_ID-value",
+                "x": 0,
+                "y": 43
+            },
+            {
+                "i": "card-OutletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 44
+            },
+            {
+                "i": "card-InletTEMPERATURE-timeseries",
+                "x": 0,
+                "y": 48
+            },
+            {
+                "i": "card-InletPRESSURE-timeseries",
+                "x": 0,
+                "y": 52
+            },
+            {
+                "i": "card-outletPRESSURE-timeseries",
+                "x": 0,
+                "y": 56
+            },
+            {
+                "i": "card-RUN_STATU-timeseries",
+                "x": 0,
+                "y": 60
+            }
+        ]
+    }
+}
