@@ -20,11 +20,17 @@ logger = logging.getLogger(__name__)
 # Replace with a credentials dictionary or provide a credentials
 # Explore > Usage > Watson IOT Platform Analytics > Copy to clipboard
 # Past contents in a json file.
+# Use pip install git+https://@github.com/ibm-watson-iot/functions.git@beta
+# Works upto createing 10 entities,  dimensions,  metrics and works with turbine-ssimulator
 '''
 
 db_schema = 'bluadmin' #  set if you are not using the default
-with open('bouygues-beta-credentials.json', encoding='utf-8') as F:
+with open('credentials_MAS-Demo.json', encoding='utf-8') as F:
     credentials = json.loads(F.read())
+
+#db_schema = 'bluadmin' #  set if you are not using the default
+#with open('bouygues-beta-credentials.json', encoding='utf-8') as F:
+#    credentials = json.loads(F.read())
 
 #db_schema = 'bluadmin'  # set if you are not using the default
 #with open('credentials_Monitor-Demo.json', encoding='utf-8') as F:
@@ -55,7 +61,7 @@ To do anything with IoT Platform Analytics, you will need one or more entity typ
 You can create entity types through the IoT Platform or using the python API as shown below.
 The database schema is only needed if you are not using the default schema. You can also rename the timestamp.
 '''
-entity_type_name = 'Equipment'
+entity_type_name = 'ACME_Compressors'
 entityType = entity_type_name
 #db.drop_table(entity_name, schema = db_schema)
 
@@ -69,7 +75,7 @@ entity = Equipment(name = entity_type_name,
 #entity.register(raise_error=False)
 # You must unregister_functions if you change the mehod signature or required inputs.
 #db.unregister_functions(["DataHTTPPreload"])
-db.unregister_functions(["TurbineHTTPPreload"])
+#db.unregister_functions(["TurbineHTTPPreload"])
 db.register_functions([TurbineHTTPPreload])
 
 meta = db.get_entity_type(entityType)
@@ -82,7 +88,7 @@ jobsettings = {'_production_mode': False,
 
 logger.info('Instantiated create compressor job')
 
-job = pp.JobController(meta, **jobsettings)
+job = JobController(meta, **jobsettings)
 job.execute()
 
 entity.exec_local_pipeline()

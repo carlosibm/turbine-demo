@@ -76,6 +76,8 @@ class Equipment (metadata.BaseCustomEntityType):
         # then delete any unwanted dimensions using SQL
         #   DELETE FROM BLUADMIN.EQUIPMENT WHERE DEVICEID=73000;
 
+        loop import csv
+
         sim = {
             'freq': '5min',
             'auto_entity_count' : 1,
