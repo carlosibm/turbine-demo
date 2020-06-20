@@ -12,14 +12,14 @@ from iotfunctions.enginelog import EngineLogging
 EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+#db_schema = 'bluadmin' #  set if you are not using the default
+#with open('credentials_MAS-Demo.json', encoding='utf-8') as F:
+#    credentials = json.loads(F.read())
+print("here")
 #with open('credentials.json', encoding='utf-8') as F:
 db_schema = 'bluadmin' #  set if you are not using the default
-with open('credentials_Monitor-Demo.json', encoding='utf-8') as F:
+with open('../bouygues-beta-credentials.json', encoding='utf-8') as F:
     credentials = json.loads(F.read())
-print("here")
-#db_schema = 'bluadmin' #  set if you are not using the default
-#with open('../bouygues-beta-credentials.json', encoding='utf-8') as F:
-#    credentials = json.loads(F.read())
 #db_schema = 'dash100462'  # replace if you are not using the default schema
 #with open('credentials_dev2.json', encoding='utf-8') as F:
 #    credentials = json.loads(F.read())
@@ -27,8 +27,8 @@ print("here db")
 db = Database(credentials = credentials)
 
 
-entity_name = 'Compressors'
-entityType = entity_type_name
+entity_name = 'ACME_Compressors'
+entityType = entity_name
 db_schema = None  # replace if you are not using the default schema
 db.drop_table(entity_name, schema=db_schema)
 entity = EntityType(entity_name, db,
@@ -59,7 +59,7 @@ jobsettings = {'_production_mode': False,
 
 logger.info('Instantiated create compressor job')
 
-job = pp.JobController(meta, **jobsettings)
+job = JobController(meta, **jobsettings)
 job.execute()
 
 entity.exec_local_pipeline()

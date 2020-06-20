@@ -53,9 +53,6 @@ Create a database object to access Watson IOT Platform Analytics DB.
 '''
 db = Database(credentials = credentials)
 
-
-
-
 '''
 To do anything with IoT Platform Analytics, you will need one or more entity type.
 You can create entity types through the IoT Platform or using the python API as shown below.
