@@ -10,7 +10,7 @@ from scripts.simple_mfg_entities import Equipment
 import datetime as dt
 from iotfunctions.enginelog import EngineLogging
 EngineLogging.configure_console_logging(logging.DEBUG)
-logger = logging.getLogger(__name__)
+logging = logging.getLogger(__name__)
 
 #db_schema = 'bluadmin' #  set if you are not using the default
 #with open('credentials_MAS-Demo.json', encoding='utf-8') as F:
@@ -57,7 +57,7 @@ jobsettings = {'_production_mode': False,
                '_db_schema': 'BLUADMIN',
                'save_trace_to_file': True}
 
-logger.info('Instantiated create compressor job')
+logging.info('Instantiated create compressor job')
 
 job = JobController(meta, **jobsettings)
 job.execute()

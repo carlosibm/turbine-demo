@@ -12,7 +12,7 @@ def create_entityType(entity_type_name, input_file):
         point_dimension_values = {
             "label": "",
             "units": "",
-            "metric_name": ""
+            "parameter_name": ""
         }
         metrics = []
 
@@ -23,12 +23,12 @@ def create_entityType(entity_type_name, input_file):
             else:
 
                 try:
-                    metric_name = row["Point"].replace(' ', '_')
+                    parameter_name = row["Point"].replace(' ', '_')
                     # name = row["Point"].replace(' ', '_')
-                    print("Name %s" % metric_name)
+                    print("Name %s" % parameter_name)
                     type = row["DataType"]
                     print("Type %s" % type)
-                    if metric_name == "":
+                    if parameter_name == "":
                         break
 
                     # Pull Name and Type from headers
@@ -38,7 +38,7 @@ def create_entityType(entity_type_name, input_file):
                     if row["Point_Data_Type"] == "S":
                         print("________________________ Point point_data_type  %s " % row["Point_Data_Type"])
                         print("________________________ Point db function name  %s " % row["Function"])
-                        metric_to_add = {'metric_name': metric_name, 'type': type}
+                        metric_to_add = {'parameter_name': parameter_name, 'type': type}
                         metrics.append(metric_to_add)
 
                     # Create Constant

@@ -3,18 +3,93 @@
 
 from iotfunctions import metadata
 from iotfunctions.metadata import EntityType
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, func
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, func, SmallInteger
 import sys
 import csv
 import pandas as pd
 import numpy as np
 from iotfunctions import bif
+from iotfunctions.base import BaseDataSource
 from iotfunctions.db import Database
+import logging
+from iotfunctions.enginelog import EngineLogging
+EngineLogging.configure_console_logging(logging.DEBUG)
+logger = logging.getLogger(__name__)
+import datetime as dt
+
+class MergeSampleTimeSeries(BaseDataSource):
+    """
+    Merge the contents of a table containing time series data with entity source data
+    """
+    merge_method = 'outer'  # or outer, concat, nearest
+    # use concat when the source time series contains the same metrics as the entity type source data
+    # use nearest to align the source time series to the entity source data
+    # use outer to add new timestamps and metrics from the source
+    merge_nearest_tolerance = pd.Timedelta('1D')
+    merge_nearest_direction = 'nearest'
+    source_table_name = 'sample_time_series'
+    source_entity_id = 'deviceid'
+    # metadata for generating sample
+    sample_metrics = ['temp', 'pressure', 'velocity']
+    sample_entities = ['entity1', 'entity2', 'entity3']
+    sample_initial_days = 3
+    sample_freq = '1min'
+    sample_incremental_min = 5
+
+    def __init__(self, input_items, output_items=None):
+        super().__init__(input_items=input_items, output_items=output_items)
+
+    def get_data(self, start_ts=None, end_ts=None, entities=None):
+
+        self.load_sample_data()
+        (query, table) = self._entity_type.db.query(self.source_table_name, schema=self._entity_type._db_schema)
+        if not start_ts is None:
+            query = query.filter(table.c[self._entity_type._timestamp] >= start_ts)
+        if not end_ts is None:
+            query = query.filter(table.c[self._entity_type._timestamp] < end_ts)
+        if not entities is None:
+            query = query.filter(table.c.deviceid.in_(entities))
+
+        parse_dates = [self._entity_type._timestamp]
+        df = pd.read_sql_query(query.statement, con=self._entity_type.db.connection, parse_dates=parse_dates)
+        df = df.astype(dtype={col: 'datetime64[ms]' for col in parse_dates}, errors='ignore')
+
+        return df
+
+    @classmethod
+    def get_item_values(cls, arg, db=None):
+        """
+        Get list of values for a picklist
+        """
+        if arg == 'input_items':
+            if db is None:
+                db = cls._entity_type.db
+            return db.get_column_names(cls.source_table_name)
+        else:
+            msg = 'No code implemented to gather available values for argument %s' % arg
+            raise NotImplementedError(msg)
+
+    def load_sample_data(self):
+
+        if not self._entity_type.db.if_exists(self.source_table_name):
+            generator = TimeSeriesGenerator(metrics=self.sample_metrics, ids=self.sample_entities,
+                                            freq=self.sample_freq, days=self.sample_initial_days,
+                                            timestamp=self._entity_type._timestamp)
+        else:
+            generator = TimeSeriesGenerator(metrics=self.sample_metrics, ids=self.sample_entities,
+                                            freq=self.sample_freq, seconds=self.sample_incremental_min * 60,
+                                            timestamp=self._entity_type._timestamp)
+
+        df = generator.execute()
+        self._entity_type.db.write_frame(df=df, table_name=self.source_table_name, version_db_writes=False,
+                                         if_exists='append', schema=self._entity_type._db_schema,
+                                         timestamp_col=self._entity_type._timestamp_col)
 
 class Turbines (metadata.BaseCustomEntityType):
 
     '''
     Sample entity type for monitoring Equipment.
+    https://github.com/ibm-watson-iot/functions/blob/60002500117c4559ed256cb68204c71d2e62893d/iotfunctions/metadata.py#L2237
     '''
 
 
@@ -25,21 +100,30 @@ class Turbines (metadata.BaseCustomEntityType):
                  description=None,
                  generate_days=0,
                  drop_existing=True,
+                 generate_entities=None,
+                 column_map = None,
+                 table_name = None
                  ):
         if (len(sys.argv) > 0):
             entity_type_name = sys.argv[1]
             input_file = sys.argv[2]
-            print("entity_type_name %s" % entity_type_name)
-            print("input_file %s" % input_file)
+            logging.debug("entity_type_name %s" % table_name)
+            logging.debug("input_file %s" % input_file)
         else:
-            print("Please provide path to csv file as script argument")
+            logging.debug("Please provide path to csv file as script argument")
             exit()
 
         # Initialize Entity Type class variables
         self.db_schema = db_schema
+        logging.debug("db_schema %s" %db_schema)
         self.db = db
+        logging.debug("db %s" %table_name)
+        self.table_name = table_name.upper()
+        logging.debug("table_name %s" %table_name)
 
         rows = []
+
+        # Read CSV File with Entity Type Configuration
         print("Open File")
         with open(input_file, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
@@ -47,56 +131,55 @@ class Turbines (metadata.BaseCustomEntityType):
             point_dimension_values = {
                 "label": "",
                 "units": "",
-                "metric_name": ""
+                "parameter_name": ""
             }
             metrics = []
+            dims = []
+            constants = []
+            funs =[]
 
             for row in csv_reader:
                 if line_count == 0:
-                    print("Column names are %s" % {", ".join(row)})
+                    logging.debug("Column names are %s" % {", ".join(row)})
                     line_count += 1
                 else:
                     try:
-                        metric_name = row["Point"].replace(' ', '_')
-                        # name = row["Point"].replace(' ', '_')
-                        print("Name %s" % metric_name)
+                        parameter_name = row["Point"].replace(' ', '_')
+                        logging.debug("Name %s" % parameter_name)
                         type = row["DataType"]
-                        print("Type %s" % type)
-                        if metric_name == "":
-                            break # No more rows
+                        logging.debug("Type %s" % type)
+                        parameter_value = row["Value"].replace(' ', '_')
+                        logging.debug("Value %s" % parameter_value)
 
-                        # Pull Name and Type from headers
-                        # print("row Point_name %s " %row["Point"] )
+                        if parameter_name == "":
+                            break # No more rows
 
                         # Create metric
                         if row["Point_Data_Type"] == "S":
-                            print("________________________ Point point_data_type  %s " % row["Point_Data_Type"])
-                            #metric_name = row["Point"].split('|| ')[1].replace(' ', '_')
-                            print("________________________ Point metric name  %s " %metric_name)
-                            print("________________________ Point metric type  %s " %type)
-                            metric_to_add = {'metric_name': metric_name, 'type': type}
+                            logging.debug("________________________ Point point_data_type metric")
+                            metric_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
                             metrics.append(metric_to_add)
+
+                        # Create dimension
+                        if row["Point_Data_Type"] == "D":
+                            logging.debug("________________________ Point point_data_type dimension")
+                            dim_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
+                            dims.append(dim_to_add)
 
                         # Create Constant
                         if row["Point_Data_Type"] == "C":
-                            print("________________________ Point value  %s " % row["Value"])
-                            print(
-                                "________________________ Point point_data_type  %s " % row["Point_Data_Type"].replace(' ',
-                                                                                                                       '_'))
-                            print("________________________ Point db function name  %s " % row["Function"])
+                            logging.debug("________________________ Point point_data_type constant")
+                            constant_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
+                            constants.append(constant_to_add)
 
                         # Create Function
                         if row["Point_Data_Type"] == "F":
-                            print("________________________ Point point_data_type  %s " % row["Point_Data_Type"])
-                            print("________________________ Point db data_type  %s " % row["DataType"])
-                            print("________________________ Point db function name  %s " % row["Function"])
+                            logging.debug("________________________ Point point_data_type function")
+                            fun_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
+                            funs.append(fun_to_add)
                     except:
-                        print(sys.exc_info()[0])  # the exception instance
+                        logging.debug(sys.exc_info()[0])  # the exception instance
                         break
-
-        # Load Data via csv into rows
-        # DF insert using pandas
-
 
         # constants
         constants = []
@@ -109,25 +192,32 @@ class Turbines (metadata.BaseCustomEntityType):
         # columns
         columns = []
 
-        '''
-        columns.append(Column('asset_id',String(50) ))
-        columns.append(Column('drvr_rpm', Float() ))
-        '''
+        # Add metrics
         for metric in metrics:
-            print("Adding metric name to entity type %s" %metric['metric_name'] )
-            print("Adding metric type to entity type %s" %metric['type'] )
+            logging.debug("Adding metric name to entity type %s" %metric['parameter_name'] )
+            logging.debug("Adding metric type to entity type %s" %metric['type'] )
+            logging.debug("Adding metric value to entity type %s" % metric['value'])
             unallowed_chars = "!@#$()"
             for char in unallowed_chars:
-                metric['metric_name'] = metric['metric_name'].replace(char, "")
-            print("Adding cleansed metric name to entity type %s" % metric['metric_name'])
-            columns.append(Column(metric['metric_name'], Float()))
-        #columns.append(Column('asset_id', String(50)))
+                metric['parameter_name'] = metric['parameter_name'].replace(char, "")
+            logging.debug("Adding cleansed metric name to entity type %s" % metric['parameter_name'])
+            if metric['type'] == "Float":
+                columns.append(Column(metric['parameter_name'], Float()))
+            if metric['type'] == "String":
+                columns.append(Column(metric['parameter_name'], String(metric['value'])))
+            if metric['type'] == "Integer":
+                columns.append(Column(metric['parameter_name'], Integer()))
 
-
-        # dimension columns
+        # Add dimensions
         dimension_columns = []
-        #for dim in dims_found:
-        #    dimension_columns.append(Column('business', String(50)))
+        for dim in dims:
+            logging.debug("Adding dimension name to entity type %s" %dim['parameter_name'] )
+            logging.debug("Adding metric type to entity type %s" %dim['type'] )
+            unallowed_chars = "!@#$()"
+            for char in unallowed_chars:
+                dim['parameter_name'] = dim['parameter_name'].replace(char, "")
+                dimension_columns.append(Column(metric['parameter_name'], String(50)))
+            logging.debug("Adding cleansed dimension name to entity type %s" % dim['parameter_name'])
 
         # functions
         functions = []
@@ -135,6 +225,7 @@ class Turbines (metadata.BaseCustomEntityType):
         #    functions.append(bif.PythonExpression(expression='df["input_flow_rate"] * df["discharge_flow_rate"]',
         #                                          output_name='output_flow_rate'))
 
+        '''
         sim = {
             'freq': '5min',
             'auto_entity_count' : 1,
@@ -158,8 +249,12 @@ class Turbines (metadata.BaseCustomEntityType):
             'drop_existing': True
         }
 
+
         generator = bif.EntityDataGenerator(ids=None, parameters=sim)
+
+
         functions.append(generator)
+        '''
 
         # data type for operator cannot be inferred automatically
         # state it explicitly
@@ -181,14 +276,156 @@ class Turbines (metadata.BaseCustomEntityType):
 
     def read_meter_data(self, input_file=None):
         # Check to make sure table was created
-        entity_type_name = "Equipment"
-        print("DB Name %s " % entity_type_name)
-        print("DB Schema %s " % self.db_schema)
-        df = self.db.read_table(table_name=entity_type_name, schema=self.db_schema)
-        print(df.head())
-        df.to_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
-        # df_to_import = pd.read_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
 
+        logging.debug("DB Name %s " % self.name)
+        logging.debug("DB Schema %s " % self.db_schema)
+
+        df = self.db.read_table(table_name=self.name.upper(), schema=self.db_schema)
+        logging.debug(df.head())
+        df.to_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
+
+        df_to_import = pd.read_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
+        logging.debug(df_to_import.head())
+
+        '''
+        # write the dataframe to the database table
+        #mybase = MergeSampleTimeSeries(object, input_items, output_items=None, dummy_items=None))
+        #mybase.write_frame(df=df_to_import, table_name=entity_type_name)
+        #kwargs = {'table_name': entity_type_name, 'schema': self.db_schema, 'row_count': len(df.index)}
+        mybase = MergeSampleTimeSeries(self, input_items=None, output_items=None, dummy_items=None)
+        mybase.write_frame(df=df_to_import, table_name=entity_type_name)
+        #self.db.write_frame(df=df, table_name=self.source_table_name, version_db_writes=False,
+        #                                 if_exists='append', schema=self._entity_type._db_schema,
+        #                                 timestamp_col=self._entity_type._timestamp_col)
+        entity_type = mybase.get_entity_type()
+        entity_type.trace_append(created_by=self, msg='Wrote data to table', log_method=logging.debug, **kwargs)
+        #entity.publish_kpis()
+        '''
+
+        response_back = {"deviceid": ["73000", "B", "C", "D", "E"],
+                         "asset_id": ["73000", "B", "C", "D", "E"],
+                         "entity_id": ["A", "B", "C", "D", "E"],
+                         "drvn_t1": [20, 15, 10, 5, 2.5],
+                         "drvn_p1": [20, 15, 10, 5, 2.5],
+                         "predict_drvn_t1":[20, 15, 10, 5, 2.5],
+                         "predict_drvn_p1": [20, 15, 10, 5, 2.5],
+                         "drvn_t2": [20, 15, 10, 5, 2.5],
+                         "drvn_p2": [20, 15, 10, 5, 2.5],
+                         "predict_drvn_t2": [20, 15, 10, 5, 2.5],
+                         "predict_drvn_p2": [20, 15, 10, 5, 2.5],
+                         "drvn_flow": [20, 15, 10, 5, 2.5],
+                         "compressor_in_y": [20, 15, 10, 5, 2.5],
+                         "compressor_in_x": [40, 30, 20, 10, 5],
+                         "compressor_out_y": [50, 50, 50, 50, 50],
+                         "compressor_out_x": [50, 50, 50, 50, 50],
+                         "run_status": [5, 5, 5, 5, 4],
+                         "run_status_x": [35, 45, 55, 65, 75],
+                         "run_status_y": [150, 160, 170, 180, 190],
+                         "scheduled_maintenance": [0, 0, 0, 0, 1],
+                         "unscheduled_maintenance": [1, 1, 0, 0, 0],
+                         "maintenance_status_x": [250, 260, 270, 280, 290],
+                         "maintenance_status_y": [35, 45, 55, 65, 75],
+                         "drvr_rpm": [10, 20, 30, 40, 50]
+                         }
+
+        df = pd.DataFrame(data=response_back)
+        #df = df_to_import
+        logging.debug("df loaded")
+        logging.debug( df.head() )
+        # use supplied column map to rename columns
+        #df = df.rename(self.column_map, axis='columns')
+        # fill in missing columns with nulls
+        required_cols = self.db.get_column_names(table=self.table_name, schema = self.db_schema)
+        logging.debug("required_cols ")
+        logging.debug(required_cols)
+        missing_cols = list(set(required_cols) - set(df.columns))
+        logging.debug("missing_cols ")
+        logging.debug(missing_cols)
+
+        if len(missing_cols) > 0:
+            kwargs = {'missing_cols': missing_cols}
+            self.trace_append(created_by=self, msg='http data was missing columns. Adding values.',
+                                     log_method=logger.debug, **kwargs)
+            for m in missing_cols:
+                if m == self._timestamp:
+                    df[m] = dt.datetime.utcnow() - dt.timedelta(seconds=15)
+                elif m == 'devicetype':
+                    df[m] = self.logical_name
+                else:
+                    df[m] = None
+
+        # remove columns that are not required
+        df = df[required_cols]
+
+        # write the dataframe to the database table
+        self.db.write_frame(df=df, table_name=self.table_name.upper())
+        kwargs = {'table_name': self.table_name.upper(), 'schema': self.db_schema, 'row_count': len(df.index)}
+        self.trace_append(created_by=self, msg='Wrote data to table', log_method=logger.debug, **kwargs)
+        return
+
+    def make_sample_entity(self, db, schema=None, name='as_sample_entity', register=False, data_days=1, freq='1min',
+                           entity_count=5, float_cols=5, string_cols=2, bool_cols=2, date_cols=2, drop_existing=False,
+                           include_generator=True):
+        """
+        Build a sample entity to use for testing.
+        Parameters
+        ----------
+        db : Database object
+            database where entity resides.
+        schema: str (optional)
+            name of database schema. Will be placed in the default schema if none specified.
+        name: str (optional)
+            by default the entity type will be called as_sample_entity
+        register: bool
+            register so that it is available in the UI
+        data_days : number
+            Number of days of sample data to generate
+        float_cols: list
+            Name of float columns to add
+        string_cols : list
+            Name of string columns to add
+        """
+
+        if entity_count is None:
+            entities = None
+        else:
+            entities = ['E%s' % x for x in list(range(entity_count))]
+
+        if isinstance(float_cols, int):
+            float_cols = ['float_%s' % x for x in list(range(float_cols))]
+        if isinstance(string_cols, int):
+            string_cols = ['string_%s' % x for x in list(range(string_cols))]
+        if isinstance(date_cols, int):
+            date_cols = ['date_%s' % x for x in list(range(date_cols))]
+        if isinstance(bool_cols, int):
+            bool_cols = ['bool_%s' % x for x in list(range(bool_cols))]
+
+        if drop_existing:
+            db.drop_table(table_name=name, schema=schema)
+
+        float_cols = [Column(x.lower(), Float()) for x in float_cols]
+        string_cols = [Column(x.lower(), String(255)) for x in string_cols]
+        bool_cols = [Column(x.lower(), SmallInteger) for x in bool_cols]
+        date_cols = [Column(x.lower(), DateTime) for x in date_cols]
+
+        functions = []
+        if include_generator:
+            sim = {'freq': freq}
+            generator = bif.EntityDataGenerator(ids=entities, parameters=sim)
+            functions.append(generator)
+
+        cols = []
+        cols.extend(float_cols)
+        cols.extend(string_cols)
+        cols.extend(bool_cols)
+        cols.extend(date_cols)
+
+        entity = metadata.BaseCustomEntityType(name=name, db=db, columns=cols, functions=functions, generate_days=data_days,
+                                               drop_existing=drop_existing, db_schema=schema)
+
+        if register:
+            entity.register(publish_kpis=True, raise_error=True)
+        return entity
 
 class Equipment (metadata.BaseCustomEntityType):
 

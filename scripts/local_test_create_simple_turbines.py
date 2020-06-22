@@ -18,16 +18,16 @@ logger = logging.getLogger(__name__)
 #db_schema = 'bluadmin' #  set if you are not using the default
 #with open('./Monitor-Demo-Credentials.json', encoding='utf-8') as F:
 #    credentials = json.loads(F.read())
-#print("here")
-#db_schema = 'bluadmin' #  set if you are not using the default
-#with open('../bouygues-beta-credentials.json', encoding='utf-8') as F:
-#    credentials = json.loads(F.read())
+print("here")
+db_schema = 'bluadmin' #  set if you are not using the default
+with open('../bouygues-beta-credentials.json', encoding='utf-8') as F:
+    credentials = json.loads(F.read())
 #db_schema = 'dash100462'  # replace if you are not using the default schema
 #with open('credentials_dev2.json', encoding='utf-8') as F:
 #    credentials = json.loads(F.read())
-db_schema = 'bluadmin' #  set if you are not using the default
-with open('credentials_MAS-Demo.json', encoding='utf-8') as F:
-    credentials = json.loads(F.read())
+#db_schema = 'bluadmin' #  set if you are not using the default
+#with open('credentials_MAS-Demo.json', encoding='utf-8') as F:
+#    credentials = json.loads(F.read())
 
 print("here db")
 db = Database(credentials = credentials)
@@ -54,7 +54,7 @@ print("here make_dimension")
 entity.make_dimension()
 
 meta = db.get_entity_type(entityType)
-pp.jobsettings = {'_production_mode': False,
+jobsettings = {'_production_mode': False,
                '_start_ts_override': dt.datetime.utcnow() - dt.timedelta(days=10),
                '_end_ts_override': (dt.datetime.utcnow() - dt.timedelta(days=1)),  # .strftime('%Y-%m-%d %H:%M:%S'),
                '_db_schema': 'BLUADMIN',
