@@ -82,7 +82,7 @@ entity.read_meter_data()
 #logging.debug("Create Calculated Metrics")
 #entity.publish_kpis()
 
-meta = db.get_entity_type(entityType)
+meta = db.get_entity_type(entity_type_name)
 jobsettings = {'_production_mode': False,
                '_start_ts_override': dt.datetime.utcnow() - dt.timedelta(days=10),
                '_end_ts_override': (dt.datetime.utcnow() - dt.timedelta(days=1)),  # .strftime('%Y-%m-%d %H:%M:%S'),
