@@ -287,7 +287,7 @@ class Turbines (metadata.BaseCustomEntityType):
         logging.debug(df.head())
         df.to_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
 
-        df_to_import = pd.read_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/EquipmentD.csv')
+        df_to_import = pd.read_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv')
         logging.debug(df_to_import.head())
 
         '''
