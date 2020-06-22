@@ -207,6 +207,8 @@ class Turbines (metadata.BaseCustomEntityType):
                 columns.append(Column(metric['parameter_name'], String(metric['value'])))
             if metric['type'] == "Integer":
                 columns.append(Column(metric['parameter_name'], Integer()))
+            if metric['type'] == "Timestamp":
+                columns.append(Column(metric['parameter_name'], DateTime()))
 
         # Add dimensions
         dimension_columns = []
@@ -277,10 +279,11 @@ class Turbines (metadata.BaseCustomEntityType):
     def read_meter_data(self, input_file=None):
         # Check to make sure table was created
 
-        logging.debug("DB Name %s " % self.name)
+        source_table_name = "Equipment"
+        logging.debug("DB Name %s " % source_table_name)
         logging.debug("DB Schema %s " % self.db_schema)
 
-        df = self.db.read_table(table_name=self.name.upper(), schema=self.db_schema)
+        df = self.db.read_table(table_name=source_table_name.upper(), schema=self.db_schema)
         logging.debug(df.head())
         df.to_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
 
@@ -300,9 +303,10 @@ class Turbines (metadata.BaseCustomEntityType):
         entity_type = mybase.get_entity_type()
         entity_type.trace_append(created_by=self, msg='Wrote data to table', log_method=logging.debug, **kwargs)
         #entity.publish_kpis()
-        '''
 
-        response_back = {"deviceid": ["73000", "B", "C", "D", "E"],
+
+        response_back = {"evt_timestamp" : ["2020-06-22T10:21:14.582", "2020-06-22T09:21:14.582", "2020-06-22T08:21:14.582", "2020-06-22T07:21:14.582", "2020-06-22T06:21:14.582"],
+                        "deviceid": ["73000", "B", "C", "D", "E"],
                          "asset_id": ["73000", "B", "C", "D", "E"],
                          "entity_id": ["A", "B", "C", "D", "E"],
                          "drvn_t1": [20, 15, 10, 5, 2.5],
@@ -327,11 +331,11 @@ class Turbines (metadata.BaseCustomEntityType):
                          "maintenance_status_y": [35, 45, 55, 65, 75],
                          "drvr_rpm": [10, 20, 30, 40, 50]
                          }
-
+    
         df = pd.DataFrame(data=response_back)
-        #df = df_to_import
-        logging.debug("df loaded")
-        logging.debug( df.head() )
+        '''
+        df = df_to_import
+
         # use supplied column map to rename columns
         #df = df.rename(self.column_map, axis='columns')
         # fill in missing columns with nulls
