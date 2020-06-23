@@ -212,14 +212,14 @@ class Turbines (metadata.BaseCustomEntityType):
                 columns.append(Column(metric['parameter_name'], DateTime()))
 
         # Add dimensions
-        dimension_columns = []
+        self.dimension_columns = []
         for dim in dims:
             logging.debug("Adding dimension name to entity type %s" %dim['parameter_name'] )
             logging.debug("Adding metric type to entity type %s" %dim['type'] )
             unallowed_chars = "!@#$()"
             for char in unallowed_chars:
                 dim['parameter_name'] = dim['parameter_name'].replace(char, "")
-                dimension_columns.append(Column(metric['parameter_name'], String(50)))
+            self.dimension_columns.append(Column(dim['parameter_name'], String(50)))
             logging.debug("Adding cleansed dimension name to entity type %s" % dim['parameter_name'])
 
         # functions
@@ -270,7 +270,7 @@ class Turbines (metadata.BaseCustomEntityType):
                          granularities = granularities,
                          columns=columns,
                          functions = functions,
-                         dimension_columns = dimension_columns,
+                         dimension_columns = self.dimension_columns,
                          output_items_extended_metadata = output_items_extended_metadata,
                          generate_days = generate_days,
                          drop_existing = drop_existing,
@@ -308,11 +308,33 @@ class Turbines (metadata.BaseCustomEntityType):
             fist_time = True
             timeseries_data = []
             data_dict = {
-                "deviceid": "",
                 "evt_timestamp": "",
+                "deviceid": "",
                 "devicetype": "",
                 "logicalinterface_id": "",
-                "run_status": ""
+                "asset_id": "",
+                "entity_id": "",
+                "drvn_t1": "",
+                "drvn_p1": "",
+                "predict_drvn_t1": "",
+                "predict_drvn_p1": "",
+                "drvn_t2": "",
+                "drvn_p2": "",
+                "predict_drvn_t2": "",
+                "predict_drvn_p2": "",
+                "drvn_flow": "",
+                "compressor_in_y": "",
+                "compressor_in_x": "",
+                "compressor_out_y": "",
+                "compressor_out_x": "",
+                "run_status": "",
+                "run_status_x": "",
+                "run_status_y": "",
+                "scheduled_maintenance": "",
+                "unscheduled_maintenance": "",
+                "maintenance_status_x": "",
+                "maintenance_status_y": "",
+                "drvr_rpm": ""
             }
 
             for row in csv_reader:
@@ -330,7 +352,29 @@ class Turbines (metadata.BaseCustomEntityType):
                         "evt_timestamp": row["EVT_TIMESTAMP"],
                         "devicetype": row["DEVICETYPE"],
                         "logicalinterface_id": row["LOGICALINTERFACE_ID"],
-                        "run_status": row["RUN_STATUS"]
+                        "asset_id": row["ASSET_ID"],
+                        "entity_id": row["ENTITY_ID"],
+                        "drvn_t1": row["DRVN_T1"],
+                        "drvn_p1": row["DRVN_P1"],
+                        "predict_drvn_t1": row["PREDICT_DRVN_T1"],
+                        "predict_drvn_p1": row["PREDICT_DRVN_P1"],
+                        "drvn_t2": row["DRVN_T2"],
+                        "drvn_p2": row["DRVN_P2"],
+                        "predict_drvn_t2": row["PREDICT_DRVN_T2"],
+                        "predict_drvn_p2": row["PREDICT_DRVN_P2"],
+                        "drvn_flow": row["DRVN_FLOW"],
+                        "compressor_in_y": row["COMPRESSOR_IN_Y"],
+                        "compressor_in_x": row["COMPRESSOR_IN_X"],
+                        "compressor_out_y": row["COMPRESSOR_OUT_Y"],
+                        "compressor_out_x": row["COMPRESSOR_OUT_X"],
+                        "run_status": row["RUN_STATUS"],
+                        "run_status_x": row["RUN_STATUS_X"],
+                        "run_status_y": row["RUN_STATUS_Y"],
+                        "scheduled_maintenance": row["SCHEDULED_MAINTENANCE"],
+                        "unscheduled_maintenance": row["UNSCHEDULED_MAINTENANCE"],
+                        "maintenance_status_x": row["MAINTENANCE_STATUS_X"],
+                        "maintenance_status_y": row["MAINTENANCE_STATUS_Y"],
+                        "drvr_rpm": row["DRVR_RPM"],
                     })
                     logging.debug("Reading metric name deviceid %s" % row["DEVICEID"] )
                     logging.debug("Reading metric name evt_timesamp %s" % row["EVT_TIMESTAMP"])
@@ -603,6 +647,9 @@ class Equipment (metadata.BaseCustomEntityType):
         dimension_columns.append(Column('train', String(50)))
         dimension_columns.append(Column('service', String(50)))
         dimension_columns.append(Column('asset_id', String(50)))
+
+        # Assign dimensions to entities from EntityConfig.CSV
+
 
         # functions
         functions = []

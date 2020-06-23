@@ -9,18 +9,18 @@ import datetime as dt
 from iotfunctions.base import BaseTransformer
 #from iotfunctions.bif import EntityDataGenerator
 #from ai import settings
-from iotfunctions.pipeline import JobController
-from iotfunctions.enginelog import EngineLogging
-EngineLogging.configure_console_logging(logging.DEBUG)
+#from iotfunctions.pipeline import JobController
+#from iotfunctions.enginelog import EngineLogging
+#EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
 import sys
-import pandas as pd
-import numpy as np
+#import pandas as pd
+#import numpy as np
 
-import csv
-import sqlalchemy
+#import csv
+#import sqlalchemy
 
 
 logging.debug("start")
@@ -74,7 +74,7 @@ logging.debug("Register EntityType")
 entity.register(raise_error=False)
 
 logging.debug("Create Dimension")
-entity.make_dimension()
+entity.make_dimension(None, entity.dimension_columns)
 
 logging.debug("Read Metrics Data")
 entity.read_meter_data()
@@ -83,18 +83,19 @@ entity.read_meter_data()
 #entity.publish_kpis()
 
 meta = db.get_entity_type(entity_type_name)
+
+'''
+#Used to execute pipeline in Monitor
 jobsettings = {'_production_mode': False,
                '_start_ts_override': dt.datetime.utcnow() - dt.timedelta(days=10),
                '_end_ts_override': (dt.datetime.utcnow() - dt.timedelta(days=1)),  # .strftime('%Y-%m-%d %H:%M:%S'),
                '_db_schema': db_schema,
                'save_trace_to_file': True}
-
 logging.info('Instantiated create  job')
-
 job = JobController(meta, **jobsettings)
 job.execute()
-
 entity.exec_local_pipeline()
+'''
 
 # Check to make sure table was created
 print("DB Name %s " % entity_type_name)
