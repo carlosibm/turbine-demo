@@ -7,15 +7,14 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, func, 
 import sys
 import csv
 import pandas as pd
-import numpy as np
+#import numpy as np
 from iotfunctions import bif
 from iotfunctions.base import BaseDataSource
-from iotfunctions.db import Database
+#from iotfunctions.db import Database
 from iotfunctions.automation import TimeSeriesGenerator
 import logging
-from iotfunctions.enginelog import EngineLogging
-
-EngineLogging.configure_console_logging(logging.DEBUG)
+#from iotfunctions.enginelog import EngineLogging
+#EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 import datetime as dt
 
