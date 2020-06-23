@@ -42,7 +42,7 @@ else:
 # Past contents in a json file.
 '''
 logging.debug("Read credentials")
-with open('../bouygues-beta-credentials.json', encoding='utf-8') as F:
+with open('bouygues-beta-credentials.json', encoding='utf-8') as F:
     credentials = json.loads(F.read())
 
 '''
@@ -68,6 +68,8 @@ entity = Turbines(name=entity_type_name, db=db, db_schema=db_schema, description
 
 logging.debug("Register EntityType")
 entity.register(raise_error=False)
+
+entity.db.register_constants(entity.ui_constants)
 
 logging.debug("Create Dimension")
 entity.make_dimension(None, entity.dimension_columns)
