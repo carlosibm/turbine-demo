@@ -11,11 +11,14 @@ import numpy as np
 from iotfunctions import bif
 from iotfunctions.base import BaseDataSource
 from iotfunctions.db import Database
+from iotfunctions.automation import TimeSeriesGenerator
 import logging
 from iotfunctions.enginelog import EngineLogging
+
 EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 import datetime as dt
+
 
 class MergeSampleTimeSeries(BaseDataSource):
     """
@@ -85,25 +88,15 @@ class MergeSampleTimeSeries(BaseDataSource):
                                          if_exists='append', schema=self._entity_type._db_schema,
                                          timestamp_col=self._entity_type._timestamp_col)
 
-class Turbines (metadata.BaseCustomEntityType):
 
+class Turbines(metadata.BaseCustomEntityType):
     '''
     Sample entity type for monitoring Equipment.
     https://github.com/ibm-watson-iot/functions/blob/60002500117c4559ed256cb68204c71d2e62893d/iotfunctions/metadata.py#L2237
     '''
 
-
-    def __init__(self,
-                 name,
-                 db,
-                 db_schema=None,
-                 description=None,
-                 generate_days=0,
-                 drop_existing=True,
-                 generate_entities=None,
-                 column_map = None,
-                 table_name = None
-                 ):
+    def __init__(self, name, db, db_schema=None, description=None, generate_days=0, drop_existing=True,
+                 generate_entities=None, column_map=None, table_name=None):
         if (len(sys.argv) > 0):
             entity_type_name = sys.argv[1]
             input_file = sys.argv[2]
@@ -115,11 +108,11 @@ class Turbines (metadata.BaseCustomEntityType):
 
         # Initialize Entity Type class variables
         self.db_schema = db_schema
-        logging.debug("db_schema %s" %db_schema)
+        logging.debug("db_schema %s" % db_schema)
         self.db = db
-        logging.debug("db %s" %table_name)
+        logging.debug("db %s" % table_name)
         self.table_name = table_name.upper()
-        logging.debug("table_name %s" %table_name)
+        logging.debug("table_name %s" % table_name)
         self.entity_type = entity_type_name
 
         rows = []
@@ -129,15 +122,11 @@ class Turbines (metadata.BaseCustomEntityType):
         with open(input_file, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             line_count = 0
-            point_dimension_values = {
-                "label": "",
-                "units": "",
-                "parameter_name": ""
-            }
+            point_dimension_values = {"label": "", "units": "", "parameter_name": ""}
             metrics = []
             dims = []
             constants = []
-            funs =[]
+            funs = []
 
             for row in csv_reader:
                 if line_count == 0:
@@ -153,30 +142,30 @@ class Turbines (metadata.BaseCustomEntityType):
                         logging.debug("Value %s" % parameter_value)
 
                         if parameter_name == "":
-                            break # No more rows
+                            break  # No more rows
 
                         # Create metric
                         if row["Point_Data_Type"] == "S":
                             logging.debug("________________________ Point point_data_type metric")
-                            metric_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
+                            metric_to_add = {'parameter_name': parameter_name, 'type': type, 'value': parameter_value}
                             metrics.append(metric_to_add)
 
                         # Create dimension
                         if row["Point_Data_Type"] == "D":
                             logging.debug("________________________ Point point_data_type dimension")
-                            dim_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
+                            dim_to_add = {'parameter_name': parameter_name, 'type': type, 'value': parameter_value}
                             dims.append(dim_to_add)
 
                         # Create Constant
                         if row["Point_Data_Type"] == "C":
                             logging.debug("________________________ Point point_data_type constant")
-                            constant_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
+                            constant_to_add = {'parameter_name': parameter_name, 'type': type, 'value': parameter_value}
                             constants.append(constant_to_add)
 
                         # Create Function
                         if row["Point_Data_Type"] == "F":
                             logging.debug("________________________ Point point_data_type function")
-                            fun_to_add = {'parameter_name': parameter_name, 'type': type, 'value':parameter_value}
+                            fun_to_add = {'parameter_name': parameter_name, 'type': type, 'value': parameter_value}
                             funs.append(fun_to_add)
                     except:
                         logging.debug(sys.exc_info()[0])  # the exception instance
@@ -195,8 +184,8 @@ class Turbines (metadata.BaseCustomEntityType):
 
         # Add metrics
         for metric in metrics:
-            logging.debug("Adding metric name to entity type %s" %metric['parameter_name'] )
-            logging.debug("Adding metric type to entity type %s" %metric['type'] )
+            logging.debug("Adding metric name to entity type %s" % metric['parameter_name'])
+            logging.debug("Adding metric type to entity type %s" % metric['type'])
             logging.debug("Adding metric value to entity type %s" % metric['value'])
             unallowed_chars = "!@#$()"
             for char in unallowed_chars:
@@ -214,8 +203,8 @@ class Turbines (metadata.BaseCustomEntityType):
         # Add dimensions
         self.dimension_columns = []
         for dim in dims:
-            logging.debug("Adding dimension name to entity type %s" %dim['parameter_name'] )
-            logging.debug("Adding metric type to entity type %s" %dim['type'] )
+            logging.debug("Adding dimension name to entity type %s" % dim['parameter_name'])
+            logging.debug("Adding metric type to entity type %s" % dim['type'])
             unallowed_chars = "!@#$()"
             for char in unallowed_chars:
                 dim['parameter_name'] = dim['parameter_name'].replace(char, "")
@@ -224,7 +213,7 @@ class Turbines (metadata.BaseCustomEntityType):
 
         # functions
         functions = []
-        #for fun in functions_found:
+        # for fun in functions_found:
         #    functions.append(bif.PythonExpression(expression='df["input_flow_rate"] * df["discharge_flow_rate"]',
         #                                          output_name='output_flow_rate'))
 
@@ -264,24 +253,16 @@ class Turbines (metadata.BaseCustomEntityType):
 
         output_items_extended_metadata = {}
 
-        super().__init__(name=entity_type_name,
-                         db = db,
-                         constants = constants,
-                         granularities = granularities,
-                         columns=columns,
-                         functions = functions,
-                         dimension_columns = self.dimension_columns,
-                         output_items_extended_metadata = output_items_extended_metadata,
-                         generate_days = generate_days,
-                         drop_existing = drop_existing,
-                         description = description,
-                        db_schema = db_schema)
+        super().__init__(name=entity_type_name, db=db, constants=constants, granularities=granularities,
+                         columns=columns, functions=functions, dimension_columns=self.dimension_columns,
+                         output_items_extended_metadata=output_items_extended_metadata, generate_days=generate_days,
+                         drop_existing=drop_existing, description=description, db_schema=db_schema)
 
     def pretty(d, indent=0):
         for key, value in d.items():
             print('\t' * indent + str(key))
             if isinstance(value, dict):
-                pretty(value, indent + 1)
+                d.pretty(value, indent + 1)
             else:
                 print('\t' * (indent + 1) + str(value))
 
@@ -300,42 +281,20 @@ class Turbines (metadata.BaseCustomEntityType):
         # Ingest timeseries data from csv file
         first_row == True
         file_to_ingest = '/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv'
-        print("Open File  %s " %file_to_ingest)
+        print("Open File  %s " % file_to_ingest)
 
         with open(file_to_ingest, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             line_count = 0
             fist_time = True
             timeseries_data = []
-            data_dict = {
-                "evt_timestamp": "",
-                "deviceid": "",
-                "devicetype": "",
-                "logicalinterface_id": "",
-                "asset_id": "",
-                "entity_id": "",
-                "drvn_t1": "",
-                "drvn_p1": "",
-                "predict_drvn_t1": "",
-                "predict_drvn_p1": "",
-                "drvn_t2": "",
-                "drvn_p2": "",
-                "predict_drvn_t2": "",
-                "predict_drvn_p2": "",
-                "drvn_flow": "",
-                "compressor_in_y": "",
-                "compressor_in_x": "",
-                "compressor_out_y": "",
-                "compressor_out_x": "",
-                "run_status": "",
-                "run_status_x": "",
-                "run_status_y": "",
-                "scheduled_maintenance": "",
-                "unscheduled_maintenance": "",
-                "maintenance_status_x": "",
-                "maintenance_status_y": "",
-                "drvr_rpm": ""
-            }
+            data_dict = {"evt_timestamp": "", "deviceid": "", "devicetype": "", "logicalinterface_id": "",
+                "asset_id": "", "entity_id": "", "drvn_t1": "", "drvn_p1": "", "predict_drvn_t1": "",
+                "predict_drvn_p1": "", "drvn_t2": "", "drvn_p2": "", "predict_drvn_t2": "", "predict_drvn_p2": "",
+                "drvn_flow": "", "compressor_in_y": "", "compressor_in_x": "", "compressor_out_y": "",
+                "compressor_out_x": "", "run_status": "", "run_status_x": "", "run_status_y": "",
+                "scheduled_maintenance": "", "unscheduled_maintenance": "", "maintenance_status_x": "",
+                "maintenance_status_y": "", "drvr_rpm": ""}
 
             for row in csv_reader:
                 if first_row == True:
@@ -343,48 +302,30 @@ class Turbines (metadata.BaseCustomEntityType):
                     first_row = False
                     line_count += 1
                 else:
-                    #try:
+                    # try:
                     if row["DEVICEID"] == "":
                         break  # No more rows
-                    logging.debug("line_count %s " %line_count)
-                    timeseries_data.append({
-                        "deviceid": row["DEVICEID"],
-                        "evt_timestamp": row["EVT_TIMESTAMP"],
-                        "devicetype": row["DEVICETYPE"],
-                        "logicalinterface_id": row["LOGICALINTERFACE_ID"],
-                        "asset_id": row["ASSET_ID"],
-                        "entity_id": row["ENTITY_ID"],
-                        "drvn_t1": row["DRVN_T1"],
-                        "drvn_p1": row["DRVN_P1"],
-                        "predict_drvn_t1": row["PREDICT_DRVN_T1"],
-                        "predict_drvn_p1": row["PREDICT_DRVN_P1"],
-                        "drvn_t2": row["DRVN_T2"],
-                        "drvn_p2": row["DRVN_P2"],
-                        "predict_drvn_t2": row["PREDICT_DRVN_T2"],
-                        "predict_drvn_p2": row["PREDICT_DRVN_P2"],
-                        "drvn_flow": row["DRVN_FLOW"],
-                        "compressor_in_y": row["COMPRESSOR_IN_Y"],
-                        "compressor_in_x": row["COMPRESSOR_IN_X"],
-                        "compressor_out_y": row["COMPRESSOR_OUT_Y"],
-                        "compressor_out_x": row["COMPRESSOR_OUT_X"],
-                        "run_status": row["RUN_STATUS"],
-                        "run_status_x": row["RUN_STATUS_X"],
-                        "run_status_y": row["RUN_STATUS_Y"],
+                    logging.debug("line_count %s " % line_count)
+                    timeseries_data.append({"deviceid": row["DEVICEID"], "evt_timestamp": row["EVT_TIMESTAMP"],
+                        "devicetype": row["DEVICETYPE"], "logicalinterface_id": row["LOGICALINTERFACE_ID"],
+                        "asset_id": row["ASSET_ID"], "entity_id": row["ENTITY_ID"], "drvn_t1": row["DRVN_T1"],
+                        "drvn_p1": row["DRVN_P1"], "predict_drvn_t1": row["PREDICT_DRVN_T1"],
+                        "predict_drvn_p1": row["PREDICT_DRVN_P1"], "drvn_t2": row["DRVN_T2"], "drvn_p2": row["DRVN_P2"],
+                        "predict_drvn_t2": row["PREDICT_DRVN_T2"], "predict_drvn_p2": row["PREDICT_DRVN_P2"],
+                        "drvn_flow": row["DRVN_FLOW"], "compressor_in_y": row["COMPRESSOR_IN_Y"],
+                        "compressor_in_x": row["COMPRESSOR_IN_X"], "compressor_out_y": row["COMPRESSOR_OUT_Y"],
+                        "compressor_out_x": row["COMPRESSOR_OUT_X"], "run_status": row["RUN_STATUS"],
+                        "run_status_x": row["RUN_STATUS_X"], "run_status_y": row["RUN_STATUS_Y"],
                         "scheduled_maintenance": row["SCHEDULED_MAINTENANCE"],
                         "unscheduled_maintenance": row["UNSCHEDULED_MAINTENANCE"],
                         "maintenance_status_x": row["MAINTENANCE_STATUS_X"],
-                        "maintenance_status_y": row["MAINTENANCE_STATUS_Y"],
-                        "drvr_rpm": row["DRVR_RPM"],
-                    })
-                    logging.debug("Reading metric name deviceid %s" % row["DEVICEID"] )
+                        "maintenance_status_y": row["MAINTENANCE_STATUS_Y"], "drvr_rpm": row["DRVR_RPM"], })
+                    logging.debug("Reading metric name deviceid %s" % row["DEVICEID"])
                     logging.debug("Reading metric name evt_timesamp %s" % row["EVT_TIMESTAMP"])
                     logging.debug("Reading metric name devicetype %s" % row["DEVICETYPE"])
                     logging.debug("Reading metric name run_status %s" % row["RUN_STATUS"])
                     logging.debug("Reading metric name logicalinterface_id %s" % row["LOGICALINTERFACE_ID"])
-                    line_count += 1
-                    #except:
-                    #    logging.debug(sys.exc_info()[0])  # the exception instance
-                    #    break
+                    line_count += 1  # except:  #    logging.debug(sys.exc_info()[0])  # the exception instance  #    break
 
         logging.debug("Imported Compressors Timeseries Data")
         logging.debug(timeseries_data)
@@ -406,12 +347,12 @@ class Turbines (metadata.BaseCustomEntityType):
         if len(missing_cols) > 0:
             kwargs = {'missing_cols': missing_cols}
             self.trace_append(created_by=self, msg='CSV Timeseries Data was missing columns. Adding values.',
-                                     log_method=logger.debug, **kwargs)
+                              log_method=logger.debug, **kwargs)
             for m in missing_cols:
                 if m == self._timestamp:
                     df[m] = dt.datetime.utcnow() - dt.timedelta(seconds=15)
                 elif m == 'devicetype':
-                    df[m] = entity_type.logical_name
+                    df[m] = self.logical_name
                 else:
                     df[m] = None
 
@@ -460,42 +401,32 @@ class Turbines (metadata.BaseCustomEntityType):
                 'run_status': '0'}]
         '''
 
-        response_back = {"evt_timestamp" : ["2020-06-21T10:21:14.582", "2020-06-21T09:21:14.582", "2020-06-21T08:21:14.582", "2020-06-21T07:21:14.582", "2020-06-21T06:21:14.582"],
-                        "deviceid": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
-                         "asset_id": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
-                         "entity_id": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
-                         "drvn_t1": [20, 15, 10, 5, 2.5],
-                         "drvn_p1": [20, 15, 10, 5, 2.5],
-                         "predict_drvn_t1":[20, 15, 10, 5, 2.5],
-                         "predict_drvn_p1": [20, 15, 10, 5, 2.5],
-                         "drvn_t2": [20, 15, 10, 5, 2.5],
-                         "drvn_p2": [20, 15, 10, 5, 2.5],
-                         "predict_drvn_t2": [20, 15, 10, 5, 2.5],
-                         "predict_drvn_p2": [20, 15, 10, 5, 2.5],
-                         "drvn_flow": [20, 15, 10, 5, 2.5],
-                         "compressor_in_y": [20, 15, 10, 5, 2.5],
-                         "compressor_in_x": [40, 30, 20, 10, 5],
-                         "compressor_out_y": [50, 50, 50, 50, 50],
-                         "compressor_out_x": [50, 50, 50, 50, 50],
-                         "run_status": [5, 5, 5, 5, 4],
-                         "run_status_x": [35, 45, 55, 65, 75],
-                         "run_status_y": [150, 160, 170, 180, 190],
-                         "scheduled_maintenance": [0, 0, 0, 0, 1],
-                         "unscheduled_maintenance": [1, 1, 0, 0, 0],
-                         "maintenance_status_x": [250, 260, 270, 280, 290],
-                         "maintenance_status_y": [35, 45, 55, 65, 75],
-                         "drvr_rpm": [10, 20, 30, 40, 50]
-                         }
+        response_back = {
+            "evt_timestamp": ["2020-06-21T10:21:14.582", "2020-06-21T09:21:14.582", "2020-06-21T08:21:14.582",
+                              "2020-06-21T07:21:14.582", "2020-06-21T06:21:14.582"],
+            "deviceid": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
+            "asset_id": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
+            "entity_id": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"], "drvn_t1": [20, 15, 10, 5, 2.5],
+            "drvn_p1": [20, 15, 10, 5, 2.5], "predict_drvn_t1": [20, 15, 10, 5, 2.5],
+            "predict_drvn_p1": [20, 15, 10, 5, 2.5], "drvn_t2": [20, 15, 10, 5, 2.5], "drvn_p2": [20, 15, 10, 5, 2.5],
+            "predict_drvn_t2": [20, 15, 10, 5, 2.5], "predict_drvn_p2": [20, 15, 10, 5, 2.5],
+            "drvn_flow": [20, 15, 10, 5, 2.5], "compressor_in_y": [20, 15, 10, 5, 2.5],
+            "compressor_in_x": [40, 30, 20, 10, 5], "compressor_out_y": [50, 50, 50, 50, 50],
+            "compressor_out_x": [50, 50, 50, 50, 50], "run_status": [5, 5, 5, 5, 4],
+            "run_status_x": [35, 45, 55, 65, 75], "run_status_y": [150, 160, 170, 180, 190],
+            "scheduled_maintenance": [0, 0, 0, 0, 1], "unscheduled_maintenance": [1, 1, 0, 0, 0],
+            "maintenance_status_x": [250, 260, 270, 280, 290], "maintenance_status_y": [35, 45, 55, 65, 75],
+            "drvr_rpm": [10, 20, 30, 40, 50]}
 
-        #df = pd.DataFrame(data=response_back)
+        # df = pd.DataFrame(data=response_back)
         logging.debug("DF from timeseries data csv ")
-        df =  pd.DataFrame(data=timeseries_data)
+        df = pd.DataFrame(data=timeseries_data)
         logging.debug(df.head())
 
         # use supplied column map to rename columns
-        #df = df.rename(self.column_map, axis='columns')
+        # df = df.rename(self.column_map, axis='columns')
         # fill in missing columns with nulls
-        required_cols = self.db.get_column_names(table=self.table_name, schema = self.db_schema)
+        required_cols = self.db.get_column_names(table=self.table_name, schema=self.db_schema)
         logging.debug("required_cols ")
         logging.debug(required_cols)
         missing_cols = list(set(required_cols) - set(df.columns))
@@ -505,12 +436,12 @@ class Turbines (metadata.BaseCustomEntityType):
         if len(missing_cols) > 0:
             kwargs = {'missing_cols': missing_cols}
             self.trace_append(created_by=self, msg='http data was missing columns. Adding values.',
-                                     log_method=logger.debug, **kwargs)
+                              log_method=logger.debug, **kwargs)
             for m in missing_cols:
                 if m == self._timestamp:
                     df[m] = dt.datetime.utcnow() - dt.timedelta(seconds=15)
                 elif m == 'devicetype':
-                    logging.debug("logical_name %s" %self.logical_name)
+                    logging.debug("logical_name %s" % self.logical_name)
                     df[m] = self.logical_name
                 else:
                     df[m] = None
@@ -581,29 +512,20 @@ class Turbines (metadata.BaseCustomEntityType):
         cols.extend(bool_cols)
         cols.extend(date_cols)
 
-        entity = metadata.BaseCustomEntityType(name=name, db=db, columns=cols, functions=functions, generate_days=data_days,
-                                               drop_existing=drop_existing, db_schema=schema)
+        entity = metadata.BaseCustomEntityType(name=name, db=db, columns=cols, functions=functions,
+                                               generate_days=data_days, drop_existing=drop_existing, db_schema=schema)
 
         if register:
             entity.register(publish_kpis=True, raise_error=True)
         return entity
 
-class Equipment (metadata.BaseCustomEntityType):
 
+class Equipment(metadata.BaseCustomEntityType):
     '''
     Sample entity type for monitoring Equipment.
     '''
 
-
-    def __init__(self,
-                 name,
-                 db,
-                 db_schema=None,
-                 description=None,
-                 generate_days=0,
-                 drop_existing=True,
-                 ):
-
+    def __init__(self, name, db, db_schema=None, description=None, generate_days=0, drop_existing=True, ):
         # constants
         constants = []
 
@@ -615,29 +537,28 @@ class Equipment (metadata.BaseCustomEntityType):
         # columns
         columns = []
 
-        columns.append(Column('asset_id',String(50) ))
-        columns.append(Column('drvr_rpm', Float() ))
-        columns.append(Column('drvn_flow', Float() ))
-        columns.append(Column('drvn_t1', Float() ))
-        columns.append(Column('drvn_p1', Float() ))
-        columns.append(Column('predict_drvn_t1', Float() ))
-        columns.append(Column('predict_drvn_p1', Float() ))
-        columns.append(Column('drvn_t2', Float() ))
-        columns.append(Column('drvn_p2', Float() ))
-        columns.append(Column('predict_drvn_t2', Float() ))
-        columns.append(Column('predict_drvn_p2', Float() ))
-        columns.append(Column('run_status', Integer() ))
-        columns.append(Column('scheduled_maintenance', Integer() ))
-        columns.append(Column('unscheduled_maintenance', Integer() ))
-        columns.append(Column('compressor_in_x', Float() ))
-        columns.append(Column('compressor_in_y', Float() ))
-        columns.append(Column('compressor_out_x', Float() ))
-        columns.append(Column('compressor_out_y', Float() ))
-        columns.append(Column('run_status_x', Integer() ))
-        columns.append(Column('run_status_y', Integer() ))
-        columns.append(Column('maintenance_status_x', Integer() ))
-        columns.append(Column('mainteancne_status_y', Integer() ))
-
+        columns.append(Column('asset_id', String(50)))
+        columns.append(Column('drvr_rpm', Float()))
+        columns.append(Column('drvn_flow', Float()))
+        columns.append(Column('drvn_t1', Float()))
+        columns.append(Column('drvn_p1', Float()))
+        columns.append(Column('predict_drvn_t1', Float()))
+        columns.append(Column('predict_drvn_p1', Float()))
+        columns.append(Column('drvn_t2', Float()))
+        columns.append(Column('drvn_p2', Float()))
+        columns.append(Column('predict_drvn_t2', Float()))
+        columns.append(Column('predict_drvn_p2', Float()))
+        columns.append(Column('run_status', Integer()))
+        columns.append(Column('scheduled_maintenance', Integer()))
+        columns.append(Column('unscheduled_maintenance', Integer()))
+        columns.append(Column('compressor_in_x', Float()))
+        columns.append(Column('compressor_in_y', Float()))
+        columns.append(Column('compressor_out_x', Float()))
+        columns.append(Column('compressor_out_y', Float()))
+        columns.append(Column('run_status_x', Integer()))
+        columns.append(Column('run_status_y', Integer()))
+        columns.append(Column('maintenance_status_x', Integer()))
+        columns.append(Column('mainteancne_status_y', Integer()))
 
         # dimension columns
         dimension_columns = []
@@ -650,7 +571,6 @@ class Equipment (metadata.BaseCustomEntityType):
 
         # Assign dimensions to entities from EntityConfig.CSV
 
-
         # functions
         functions = []
         # simulation settings
@@ -659,28 +579,17 @@ class Equipment (metadata.BaseCustomEntityType):
         # then delete any unwanted dimensions using SQL
         #   DELETE FROM BLUADMIN.EQUIPMENT WHERE DEVICEID=73000;
 
-        sim = {
-            'freq': '5min',
-            'auto_entity_count' : 1,
-            'data_item_mean': {'drvn_t1': 22,
-                               'STEP': 1,
-                               'drvn_p1': 50,
-                               'asset_id': 1
-                               },
-            'data_item_domain': {
-                #'dim_business' : ['Australia','Netherlands','USA' ],
-                'dim_business' : ['Netherlands' ],
-                #'dim_site' : ['FLNG Prelude','Pernis Refinery','Convent Refinery', 'FCCU', 'HTU3', 'HTU2','H-Oil','HCU' ],
-                'dim_site' : ['HCU'],
-                'dim_equipment_type': ['Train'],
-                'dim_train_type': ['FGC-B','FGC-A','FGC-C ','P-45001A'],
-                #'dim_service': ['Charge Pump','H2 Compressor','Hydrogen Makeup Compressor','Wet Gas Compressor', 'Fresh Feed Pump'],
-                'dim_service': ['H2 Compressor'],
-                #'dim_asset_id': ['2K-330','2K-331','2K-332','2K-333'],
-                'dim_asset_id': ['016-IV-1011','016-IV-3011','016-IV-4011','016-IV-5011','016-IV-6011']
-            },
-            'drop_existing': True
-        }
+        sim = {'freq': '5min', 'auto_entity_count': 1,
+            'data_item_mean': {'drvn_t1': 22, 'STEP': 1, 'drvn_p1': 50, 'asset_id': 1},
+            'data_item_domain': {  # 'dim_business' : ['Australia','Netherlands','USA' ],
+                'dim_business': ['Netherlands'],
+                # 'dim_site' : ['FLNG Prelude','Pernis Refinery','Convent Refinery', 'FCCU', 'HTU3', 'HTU2','H-Oil','HCU' ],
+                'dim_site': ['HCU'], 'dim_equipment_type': ['Train'],
+                'dim_train_type': ['FGC-B', 'FGC-A', 'FGC-C ', 'P-45001A'],
+                # 'dim_service': ['Charge Pump','H2 Compressor','Hydrogen Makeup Compressor','Wet Gas Compressor', 'Fresh Feed Pump'],
+                'dim_service': ['H2 Compressor'],  # 'dim_asset_id': ['2K-330','2K-331','2K-332','2K-333'],
+                'dim_asset_id': ['016-IV-1011', '016-IV-3011', '016-IV-4011', '016-IV-5011', '016-IV-6011']},
+            'drop_existing': True}
 
         generator = bif.EntityDataGenerator(ids=None, parameters=sim)
         functions.append(generator)
@@ -690,15 +599,7 @@ class Equipment (metadata.BaseCustomEntityType):
 
         output_items_extended_metadata = {}
 
-        super().__init__(name=name,
-                         db = db,
-                         constants = constants,
-                         granularities = granularities,
-                         columns=columns,
-                         functions = functions,
-                         dimension_columns = dimension_columns,
-                         output_items_extended_metadata = output_items_extended_metadata,
-                         generate_days = generate_days,
-                         drop_existing = drop_existing,
-                         description = description,
-                        db_schema = db_schema)
+        super().__init__(name=name, db=db, constants=constants, granularities=granularities, columns=columns,
+                         functions=functions, dimension_columns=dimension_columns,
+                         output_items_extended_metadata=output_items_extended_metadata, generate_days=generate_days,
+                         drop_existing=drop_existing, description=description, db_schema=db_schema)

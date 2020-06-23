@@ -7,20 +7,21 @@ from scripts.simple_mfg_entities import Turbines
 from iotfunctions.db import Database
 import datetime as dt
 from iotfunctions.base import BaseTransformer
-#from iotfunctions.bif import EntityDataGenerator
-#from ai import settings
-#from iotfunctions.pipeline import JobController
-#from iotfunctions.enginelog import EngineLogging
-#EngineLogging.configure_console_logging(logging.DEBUG)
+
+# from iotfunctions.bif import EntityDataGenerator
+# from ai import settings
+# from iotfunctions.pipeline import JobController
+# from iotfunctions.enginelog import EngineLogging
+# EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-
 import sys
-#import pandas as pd
-#import numpy as np
 
-#import csv
-#import sqlalchemy
+# import pandas as pd
+# import numpy as np
+
+# import csv
+# import sqlalchemy
 
 
 logging.debug("start")
@@ -29,7 +30,7 @@ if (len(sys.argv) > 0):
     entity_type_name = sys.argv[1]
     entityType = entity_type_name
     input_file = sys.argv[2]
-    logging.debug("entity_name %s" %entity_type_name)
+    logging.debug("entity_name %s" % entity_type_name)
     logging.debug("input_file %s" % input_file)
 else:
     logging.debug("Please provide path to csv file as script argument")
@@ -47,13 +48,13 @@ with open('../bouygues-beta-credentials.json', encoding='utf-8') as F:
 '''
 Create a database object to access Watson IOT Platform Analytics DB.
 '''
-db = Database(credentials = credentials)
-db_schema = 'bluadmin' #  set if you are not using the default
+db = Database(credentials=credentials)
+db_schema = 'bluadmin'  # set if you are not using the default
 
 print("Delete existing Entity Type")
-db.drop_table(entity_type_name, schema = db_schema)
+db.drop_table(entity_type_name, schema=db_schema)
 
-#print("Unregister EntityType")
+# print("Unregister EntityType")
 ####
 # Required input args for creating an entity type
 # self, name, db, columns=None, constants=None, granularities=None, functions=None,
@@ -62,13 +63,8 @@ db.drop_table(entity_type_name, schema = db_schema)
 # https://github.com/ibm-watson-iot/functions/blob/60002500117c4559ed256cb68204c71d2e62893d/iotfunctions/metadata.py#L2237
 ###
 logging.debug("Create Entity Type")
-entity = Turbines(name = entity_type_name,
-                    db = db,
-                    db_schema = db_schema,
-                    description = "Equipment Turbines",
-                    generate_entities=True,
-                    table_name=entity_type_name
-                )
+entity = Turbines(name=entity_type_name, db=db, db_schema=db_schema, description="Equipment Turbines",
+                  generate_entities=True, table_name=entity_type_name)
 
 logging.debug("Register EntityType")
 entity.register(raise_error=False)
@@ -79,8 +75,8 @@ entity.make_dimension(None, entity.dimension_columns)
 logging.debug("Read Metrics Data")
 entity.read_meter_data()
 
-#logging.debug("Create Calculated Metrics")
-#entity.publish_kpis()
+# logging.debug("Create Calculated Metrics")
+# entity.publish_kpis()
 
 meta = db.get_entity_type(entity_type_name)
 
@@ -101,5 +97,4 @@ entity.exec_local_pipeline()
 print("DB Name %s " % entity_type_name)
 print("DB Schema %s " % db_schema)
 df = db.read_table(table_name=entity_type_name, schema=db_schema)
-print( df.head())
-#entity.read_meter_data( input_file="None")
+print(df.head())  # entity.read_meter_data( input_file="None")
