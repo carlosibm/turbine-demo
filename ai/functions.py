@@ -293,7 +293,7 @@ class TurbineHTTPPreload(BasePreload):
         '''
         response_data[ 'business' ] =  ['Australia', 'USA','Netherlands','Netherlands','Australia']
         response_data[ 'site' ] =  ['FCCU', 'H-Oil', 'HTU2', 'HCU', 'FCCU'  ]
-        response_data[ 'equipment_type' ] =  ['Train', 'Train', 'Train', 'Train', 'Train']
+        response_data[ 'equipment_type' ] =  ['train', 'train', 'train', 'train', 'train']
 
         '''
         # Create Numpy array using remaining entity metrics

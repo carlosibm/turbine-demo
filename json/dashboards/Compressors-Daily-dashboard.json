@@ -131,7 +131,7 @@
                 "groupBy": [
                     "deviceid",
                     "Train",
-                    "Site",
+                    "site",
                     "Service",
                     "Path"
                 ],
@@ -148,8 +148,8 @@
                         "label": "Train"
                     },
                     {
-                        "dataSourceId": "Site",
-                        "label": "Site"
+                        "dataSourceId": "site",
+                        "label": "site"
                     },
                     {
                         "dataSourceId": "Service",

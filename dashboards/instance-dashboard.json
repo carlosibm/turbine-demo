@@ -30,8 +30,8 @@
                         "id": "business"
                     },
                     {
-                        "attribute": "Train",
-                        "id": "Train"
+                        "attribute": "train",
+                        "id": "train"
                     }
                 ]
             },
@@ -46,7 +46,7 @@
                         "label": "business"
                     },
                     {
-                        "dataSourceId": "Train",
+                        "dataSourceId": "train",
                         "label": "Train"
                     }
                 ]
@@ -1180,10 +1180,6 @@
                         "id": "run_status"
                     },
                     {
-                        "attribute": "run_status_entity_73000_score",
-                        "id": "run_status_entity_73000_score"
-                    },
-                    {
                         "attribute": "run_status_entity_73000_saliency_score",
                         "id": "run_status_entity_73000_saliency_score"
                     },
@@ -1223,10 +1219,6 @@
                     {
                         "dataSourceId": "run_status",
                         "label": "Mins Run"
-                    },
-                    {
-                        "dataSourceId": "run_status_entity_73000_score",
-                        "label": "Run Status Anomaly Score Spectral"
                     },
                     {
                         "dataSourceId": "run_status_entity_73000_saliency_score",

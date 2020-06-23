@@ -220,16 +220,26 @@ class Turbines(metadata.BaseCustomEntityType):
             for char in unallowed_chars:
                 constant['parameter_name'] = constant['parameter_name'].replace(char, "")
             logging.debug("Adding cleansed constnat name to entity type %s" % constant['parameter_name'])
-            if constant['type'] == "Float":
-                self.constants.append(
-                    UISingle(name=constant['parameter_name'], datatype=float, values=constant['value']))
-            if constant['type'] == "String":
-                self.constants.append(
-                    UISingle(name=constant['parameter_name'], datatype=str, default=constant['value']))
-            if constant['type'] == "Integer":
-                self.constants.append(
-                    UISingle(name=constant['parameter_name'], datatype=int, default=constant['value']))
 
+            # Constants payload: b'[{"name": "gravity", "entityType": null, "enabled": true, "value": null, "metadata": {"type": "CONSTANT", "dataType": "NUMBER", "description": "Enter a constant value", "tags": [], "required": true, "values": "9.81"}}]'
+            if constant['type'] == "Float":
+                try:
+                    con = UISingle(name=constant['parameter_name'], datatype=float, values=constant['value'])
+                    self.db.register_constants(con)
+                except:
+                    logging.debug("Constant likely exists already")
+            if constant['type'] == "String":
+                try:
+                    con = UISingle(name=constant['parameter_name'], datatype=str, values=constant['value'])
+                    self.db.register_constants(con)
+                except:
+                    logging.debug("Constant likely exists already")
+            if constant['type'] == "Integer":
+                try:
+                    con = UISingle(name=constant['parameter_name'], datatype=int, values=constant['value'])
+                    self.db.register_constants(con)
+                except:
+                    logging.debug("Constant likely exists already")
         # functions
         functions = []
         # for fun in functions_found:

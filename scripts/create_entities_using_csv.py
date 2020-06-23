@@ -69,6 +69,9 @@ entity = Turbines(name=entity_type_name, db=db, db_schema=db_schema, description
 logging.debug("Register EntityType")
 entity.register(raise_error=False)
 
+#logging.debug("Register Constants")
+#entity.db.register_constants(entity.ui_constants)
+
 logging.debug("Create Dimension")
 entity.make_dimension(None, entity.dimension_columns)
 
