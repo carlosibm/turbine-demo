@@ -27,7 +27,7 @@ logging.debug("start")
 
 if (len(sys.argv) > 0):
     entity_type_name = sys.argv[1]
-    entityType = "GasTurbines3"
+    entityType = entity_type_name
     input_file = sys.argv[2]
     logging.debug("entity_name %s" %entity_type_name)
     logging.debug("input_file %s" % input_file)

@@ -120,6 +120,7 @@ class Turbines (metadata.BaseCustomEntityType):
         logging.debug("db %s" %table_name)
         self.table_name = table_name.upper()
         logging.debug("table_name %s" %table_name)
+        self.entity_type = entity_type_name
 
         rows = []
 
@@ -276,9 +277,17 @@ class Turbines (metadata.BaseCustomEntityType):
                          description = description,
                         db_schema = db_schema)
 
-    def read_meter_data(self, input_file=None):
-        # Check to make sure table was created
+    def pretty(d, indent=0):
+        for key, value in d.items():
+            print('\t' * indent + str(key))
+            if isinstance(value, dict):
+                pretty(value, indent + 1)
+            else:
+                print('\t' * (indent + 1) + str(value))
 
+    def read_meter_data(self, input_file=None, first_row=None, column_map=None):
+        '''
+       # Check to make sure table was created
         source_table_name = "Equipment"
         logging.debug("DB Name %s " % source_table_name)
         logging.debug("DB Schema %s " % self.db_schema)
@@ -286,9 +295,86 @@ class Turbines (metadata.BaseCustomEntityType):
         df = self.db.read_table(table_name=source_table_name.upper(), schema=self.db_schema)
         logging.debug(df.head())
         df.to_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
+        '''
 
-        df_to_import = pd.read_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv')
+        # Ingest timeseries data from csv file
+        first_row == True
+        file_to_ingest = '/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv'
+        print("Open File  %s " %file_to_ingest)
+
+        with open(file_to_ingest, mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            line_count = 0
+            fist_time = True
+            timeseries_data = []
+            data_dict = {
+                "deviceid": "",
+                "evt_timestamp": "",
+                "devicetype": "",
+                "logicalinterface_id": "",
+                "run_status": ""
+            }
+
+            for row in csv_reader:
+                if first_row == True:
+                    logging.debug("Timeseries Data Column names are %s" % {", ".join(row)})
+                    first_row = False
+                    line_count += 1
+                else:
+                    #try:
+                    if row["DEVICEID"] == "":
+                        break  # No more rows
+                    logging.debug("line_count %s " %line_count)
+                    timeseries_data.append({
+                        "deviceid": row["DEVICEID"],
+                        "evt_timestamp": row["EVT_TIMESTAMP"],
+                        "devicetype": row["DEVICETYPE"],
+                        "logicalinterface_id": row["LOGICALINTERFACE_ID"],
+                        "run_status": row["RUN_STATUS"]
+                    })
+                    logging.debug("Reading metric name deviceid %s" % row["DEVICEID"] )
+                    logging.debug("Reading metric name evt_timesamp %s" % row["EVT_TIMESTAMP"])
+                    logging.debug("Reading metric name devicetype %s" % row["DEVICETYPE"])
+                    logging.debug("Reading metric name run_status %s" % row["RUN_STATUS"])
+                    logging.debug("Reading metric name logicalinterface_id %s" % row["LOGICALINTERFACE_ID"])
+                    line_count += 1
+                    #except:
+                    #    logging.debug(sys.exc_info()[0])  # the exception instance
+                    #    break
+
+        logging.debug("Imported Compressors Timeseries Data")
+        logging.debug(timeseries_data)
+
+        # Compare df_to_import  versus df using json object.
+        pd.set_option('display.max_columns', None)
+        df_to_import = pd.DataFrame(data=timeseries_data)
         logging.debug(df_to_import.head())
+
+        # Transpose the rows and columns
+        # use supplied column map to rename columns
+        if column_map is None:
+            column_map = {}
+        self.column_map = column_map
+        df = df_to_import.rename(self.column_map, axis='columns')
+        # fill in missing columns with nulls
+        required_cols = self.db.get_column_names(table=self.table_name, schema=self.db_schema)
+        missing_cols = list(set(required_cols) - set(df.columns))
+        if len(missing_cols) > 0:
+            kwargs = {'missing_cols': missing_cols}
+            self.trace_append(created_by=self, msg='CSV Timeseries Data was missing columns. Adding values.',
+                                     log_method=logger.debug, **kwargs)
+            for m in missing_cols:
+                if m == self._timestamp:
+                    df[m] = dt.datetime.utcnow() - dt.timedelta(seconds=15)
+                elif m == 'devicetype':
+                    df[m] = entity_type.logical_name
+                else:
+                    df[m] = None
+
+        # remove columns that are not required
+        df = df[required_cols]
+        logging.debug("Transposed DF---")
+        logging.debug(df.head())
 
         '''
         # write the dataframe to the database table
@@ -303,12 +389,37 @@ class Turbines (metadata.BaseCustomEntityType):
         entity_type = mybase.get_entity_type()
         entity_type.trace_append(created_by=self, msg='Wrote data to table', log_method=logging.debug, **kwargs)
         #entity.publish_kpis()
+        '''
 
+        '''        
+        DEBUG
+        response_back = [
+            {'deviceid': '73005', 'evt_timesamp': '2020-05-16-00.02.35.464000', 'devicetype': 'GasTurbines3',
+             'run_status': '0'}, {'deviceid': '73008', 'evt_timesamp': '2020-05-16-00.07.35.464000',
+                                  'devicetype': 'GasTurbines3', 'run_status': '0'}, {'deviceid': '73003',
+                                                                                     'evt_timesamp': '2020-05-16-00.12.35.464000',
+                                                                                     'devicetype': 'GasTurbines3',
+                                                                                     'run_status': '0'}, {
+                'deviceid': '73003', 'evt_timesamp': '2020-05-16-00.17.35.464000', 'devicetype': 'GasTurbines3',
+                'run_status': '-1'}, {'deviceid': '73000', 'evt_timesamp': '2020-05-16-00.22.35.464000',
+                                      'devicetype': 'GasTurbines3', 'run_status': '0'}, {'deviceid': '73001',
+                                                                                         'evt_timesamp': '2020-05-16-00.27.35.464000',
+                                                                                         'devicetype': 'GasTurbines3',
+                                                                                         'run_status': '0'}, {
+                'deviceid': '73005', 'evt_timesamp': '2020-05-16-00.32.35.464000', 'devicetype': 'GasTurbines3',
+                'run_status': '0'}, {'deviceid': '73009', 'evt_timesamp': '2020-05-16-00.37.35.464000',
+                                     'devicetype': 'GasTurbines3', 'run_status': '-1'}, {'deviceid': '73007',
+                                                                                         'evt_timesamp': '2020-05-16-00.42.35.464000',
+                                                                                         'devicetype': 'GasTurbines3',
+                                                                                         'run_status': '-2'}, {
+                'deviceid': '73008', 'evt_timesamp': '2020-05-16-00.47.35.464000', 'devicetype': 'GasTurbines3',
+                'run_status': '0'}]
+        '''
 
-        response_back = {"evt_timestamp" : ["2020-06-22T10:21:14.582", "2020-06-22T09:21:14.582", "2020-06-22T08:21:14.582", "2020-06-22T07:21:14.582", "2020-06-22T06:21:14.582"],
-                        "deviceid": ["73000", "B", "C", "D", "E"],
-                         "asset_id": ["73000", "B", "C", "D", "E"],
-                         "entity_id": ["A", "B", "C", "D", "E"],
+        response_back = {"evt_timestamp" : ["2020-06-21T10:21:14.582", "2020-06-21T09:21:14.582", "2020-06-21T08:21:14.582", "2020-06-21T07:21:14.582", "2020-06-21T06:21:14.582"],
+                        "deviceid": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
+                         "asset_id": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
+                         "entity_id": ["K-14040", "K-14041", "K-14042", "K-14043", "K-14044"],
                          "drvn_t1": [20, 15, 10, 5, 2.5],
                          "drvn_p1": [20, 15, 10, 5, 2.5],
                          "predict_drvn_t1":[20, 15, 10, 5, 2.5],
@@ -331,10 +442,11 @@ class Turbines (metadata.BaseCustomEntityType):
                          "maintenance_status_y": [35, 45, 55, 65, 75],
                          "drvr_rpm": [10, 20, 30, 40, 50]
                          }
-    
-        df = pd.DataFrame(data=response_back)
-        '''
-        df = df_to_import
+
+        #df = pd.DataFrame(data=response_back)
+        logging.debug("DF from timeseries data csv ")
+        df =  pd.DataFrame(data=timeseries_data)
+        logging.debug(df.head())
 
         # use supplied column map to rename columns
         #df = df.rename(self.column_map, axis='columns')
@@ -354,6 +466,7 @@ class Turbines (metadata.BaseCustomEntityType):
                 if m == self._timestamp:
                     df[m] = dt.datetime.utcnow() - dt.timedelta(seconds=15)
                 elif m == 'devicetype':
+                    logging.debug("logical_name %s" %self.logical_name)
                     df[m] = self.logical_name
                 else:
                     df[m] = None
@@ -368,7 +481,7 @@ class Turbines (metadata.BaseCustomEntityType):
         return
 
     def make_sample_entity(self, db, schema=None, name='as_sample_entity', register=False, data_days=1, freq='1min',
-                           entity_count=5, float_cols=5, string_cols=2, bool_cols=2, date_cols=2, drop_existing=False,
+                           entity_count=5, float_cols=5, string_cols=2, bool_cols=2, date_cols=2, drop_existing=True,
                            include_generator=True):
         """
         Build a sample entity to use for testing.

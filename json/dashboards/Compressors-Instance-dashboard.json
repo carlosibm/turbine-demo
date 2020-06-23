@@ -802,131 +802,14 @@
                     }
                 ],
                 "range": {
-                    "count": -1,
+                    "count": -24,
                     "interval": "hour",
-                    "type": "periodToDate"
+                    "type": "rolling"
                 }
             },
             "id": "train",
             "size": "LARGE",
             "title": "Train Level 1 Monitoring",
-            "type": "IMAGE"
-        },
-        {
-            "content": {
-                "alt": "Level 1 Monitoring",
-                "zoomMax": 1,
-                "hotspots": [
-                    {
-                        "color": "#FFF",
-                        "content": {
-                            "attributes": [
-                                {
-                                    "dataSourceId": "drvn_p1",
-                                    "label": "Inlet Pressure",
-                                    "unit": "PSI"
-                                },
-                                {
-                                    "dataSourceId": "drvn_p2",
-                                    "label": "Outlet Pressure",
-                                    "unit": "PSI"
-                                }
-                            ]
-                        },
-                        "locations": [
-                            {
-                                "xDataSourceId": "compressor_in_x_factor",
-                                "yDataSourceId": "compressor_in_y_factor",
-                                "dataFilter": {
-                                    "deviceid": "deviceid"
-                                }
-                            }
-                        ],
-                        "thresholds": [
-                            {
-                                "color": "red",
-                                "comparison": ">=",
-                                "dataSourceId": "drvn_p1",
-                                "icon": "icon--close--solid",
-                                "isHotspot": true,
-                                "value": 15000
-                            },
-                            {
-                                "color": "green",
-                                "comparison": ">",
-                                "dataSourceId": "drvn_p1",
-                                "icon": "icon--close--solid",
-                                "isHotspot": true,
-                                "value": 10000
-                            },
-                            {
-                                "color": "yellow",
-                                "comparison": "<=",
-                                "dataSourceId": "drvn_p1",
-                                "icon": "icon--close--solid",
-                                "isHotspot": true,
-                                "value": 10000
-                            },
-                            {
-                                "color": "red",
-                                "comparison": ">=",
-                                "dataSourceId": "drvn_p2",
-                                "icon": "icon--close--solid",
-                                "isHotspot": true,
-                                "value": 15000
-                            },
-                            {
-                                "color": "green",
-                                "comparison": ">",
-                                "dataSourceId": "drvn_p2",
-                                "icon": "icon--close--solid",
-                                "isHotspot": true,
-                                "value": 10000
-                            },
-                            {
-                                "color": "yellow",
-                                "comparison": "<=",
-                                "dataSourceId": "drvn_p2",
-                                "icon": "icon--close--solid",
-                                "isHotspot": true,
-                                "value": 10000
-                            }
-                        ]
-                    }
-                ],
-                "image": "compressor_flow_range2"
-            },
-            "dataSource": {
-                "attributes": [
-                    {
-                        "attribute": "drvn_p1",
-                        "id": "drvn_p1"
-                    },
-                    {
-                        "attribute": "drvn_p2",
-                        "id": "drvn_p2"
-                    },
-                    {
-                        "attribute": "compressor_in_y_factor",
-                        "id": "compressor_in_y_factor"
-                    },
-                    {
-                        "attribute": "compressor_in_x_factor",
-                        "id": "compressor_in_x_factor"
-                    }
-                ],
-                "range": {
-                    "count": -1,
-                    "interval": "hour",
-                    "type": "periodToDate"
-                },
-                "groupBy": [
-                    "deviceid"
-                ]
-            },
-            "id": "compressor_flow_range2",
-            "size": "LARGE",
-            "title": "Polytropic Head. (ft * lb-f? /  lb m) vs Flow  ",
             "type": "IMAGE"
         },
         {
@@ -1263,10 +1146,8 @@
                     "type": "alert",
                     "dataFilter": {
                         "name": [
-                            "multivariate_isolation_alert",
                             "IsolationForestModelAlert",
-                            "multivariate_isolation_alert2",
-                            "multivariate_isolation_simple_alert"
+                            "CarlosIsolationModelScore"
                         ]
                     }
                 },
@@ -1291,16 +1172,32 @@
             "type": "TIMESERIES"
         },
         {
-            "id": "card-outletPRESSURE-timeseries",
+            "id": "card-RUN_STATU-timeseries",
             "dataSource": {
                 "attributes": [
                     {
-                        "attribute": "drvn_p2",
-                        "id": "drvn_p2"
+                        "attribute": "run_status",
+                        "id": "run_status"
                     },
                     {
-                        "attribute": "predict_drvn_p2",
-                        "id": "predict_drvn_p2"
+                        "attribute": "run_status_entity_73000_score",
+                        "id": "run_status_entity_73000_score"
+                    },
+                    {
+                        "attribute": "run_status_entity_73000_saliency_score",
+                        "id": "run_status_entity_73000_saliency_score"
+                    },
+                    {
+                        "attribute": "run_status_entity_73000_fft_score",
+                        "id": "run_status_entity_73000_fft_score"
+                    },
+                    {
+                        "attribute": "run_status_entity_73000_generalized_score",
+                        "id": "run_status_entity_73000_generalized_score"
+                    },
+                    {
+                        "attribute": "run_status_entity_73000_kmeans_score",
+                        "id": "run_status_entity_73000_kmeans_score"
                     }
                 ],
                 "range": {
@@ -1311,10 +1208,11 @@
                     "type": "alert",
                     "dataFilter": {
                         "name": [
-                            "multivariate_isolation_alert",
-                            "IsolationForestModelAlert",
-                            "multivariate_isolation_alert2",
-                            "multivariate_isolation_simple_alert"
+                            "run_status_entity_73000_alert",
+                            "run_status_entity_73000_saliency_alert",
+                            "run_status_entity_73000_fft_alert",
+                            "run_status_entity_73000_generalized_alert",
+                            "run_status_entity_73000_kmeans_alert"
                         ]
                     }
                 },
@@ -1323,41 +1221,28 @@
             "content": {
                 "series": [
                     {
-                        "dataSourceId": "drvn_p2",
-                        "label": "Outlet PSI"
-                    },
-                    {
-                        "dataSourceId": "predict_drvn_p2",
-                        "label": "Outlet Predicted PSI"
-                    }
-                ],
-                "xLabel": "Time",
-                "yLabel": "Head PSI"
-            },
-            "size": "LARGE",
-            "title": "Compressor Pressure Head Outlet",
-            "type": "TIMESERIES"
-        },
-        {
-            "id": "card-RUN_STATU-timeseries",
-            "dataSource": {
-                "attributes": [
-                    {
-                        "attribute": "run_status",
-                        "id": "run_status"
-                    }
-                ],
-                "range": {
-                    "count": -24,
-                    "interval": "hour"
-                },
-                "timeGrain": "day"
-            },
-            "content": {
-                "series": [
-                    {
                         "dataSourceId": "run_status",
                         "label": "Mins Run"
+                    },
+                    {
+                        "dataSourceId": "run_status_entity_73000_score",
+                        "label": "Run Status Anomaly Score Spectral"
+                    },
+                    {
+                        "dataSourceId": "run_status_entity_73000_saliency_score",
+                        "label": "Run Status Anomaly Score Saliency"
+                    },
+                    {
+                        "dataSourceId": "run_status_entity_73000_fft_score",
+                        "label": "Run Status Anomaly Score FFT"
+                    },
+                    {
+                        "dataSourceId": "run_status_entity_73000_generalized_score",
+                        "label": "Run Status Anomaly Score Generalized"
+                    },
+                    {
+                        "dataSourceId": "run_status_entity_73000_kmeans_score",
+                        "label": "Run Status Anomaly Score Kmeans"
                     }
                 ],
                 "xLabel": "Time",
@@ -1447,11 +1332,6 @@
                 "y": 10
             },
             {
-                "i": "compressor_flow_range2",
-                "x": 8,
-                "y": 10
-            },
-            {
                 "i": "card-FLOW-value",
                 "x": 0,
                 "y": 1
@@ -1484,7 +1364,7 @@
             {
                 "i": "card-OutletTEMPERATURE-timeseries",
                 "x": 8,
-                "y": 14
+                "y": 10
             },
             {
                 "i": "card-InletTEMPERATURE-timeseries",
@@ -1494,17 +1374,12 @@
             {
                 "i": "card-InletPRESSURE-timeseries",
                 "x": 8,
-                "y": 18
-            },
-            {
-                "i": "card-outletPRESSURE-timeseries",
-                "x": 0,
-                "y": 18
+                "y": 14
             },
             {
                 "i": "card-RUN_STATU-timeseries",
                 "x": 8,
-                "y": 22
+                "y": 18
             }
         ],
         "xl": [
@@ -1584,11 +1459,6 @@
                 "y": 10
             },
             {
-                "i": "compressor_flow_range2",
-                "x": 8,
-                "y": 10
-            },
-            {
                 "i": "card-FLOW-value",
                 "x": 0,
                 "y": 1
@@ -1621,7 +1491,7 @@
             {
                 "i": "card-OutletTEMPERATURE-timeseries",
                 "x": 8,
-                "y": 14
+                "y": 10
             },
             {
                 "i": "card-InletTEMPERATURE-timeseries",
@@ -1631,17 +1501,12 @@
             {
                 "i": "card-InletPRESSURE-timeseries",
                 "x": 8,
-                "y": 18
-            },
-            {
-                "i": "card-outletPRESSURE-timeseries",
-                "x": 0,
-                "y": 18
+                "y": 14
             },
             {
                 "i": "card-RUN_STATU-timeseries",
                 "x": 8,
-                "y": 22
+                "y": 18
             }
         ],
         "lg": [
@@ -1721,11 +1586,6 @@
                 "y": 8
             },
             {
-                "i": "compressor_flow_range2",
-                "x": 0,
-                "y": 12
-            },
-            {
                 "i": "card-FLOW-value",
                 "x": 8,
                 "y": 12
@@ -1763,17 +1623,12 @@
             {
                 "i": "card-InletTEMPERATURE-timeseries",
                 "x": 0,
-                "y": 16
+                "y": 12
             },
             {
                 "i": "card-InletPRESSURE-timeseries",
                 "x": 8,
                 "y": 19
-            },
-            {
-                "i": "card-outletPRESSURE-timeseries",
-                "x": 0,
-                "y": 20
             },
             {
                 "i": "card-RUN_STATU-timeseries",
@@ -1858,11 +1713,6 @@
                 "y": 14
             },
             {
-                "i": "compressor_flow_range2",
-                "x": 0,
-                "y": 18
-            },
-            {
                 "i": "card-FLOW-value",
                 "x": 0,
                 "y": 22
@@ -1906,11 +1756,6 @@
                 "i": "card-InletPRESSURE-timeseries",
                 "x": 0,
                 "y": 33
-            },
-            {
-                "i": "card-outletPRESSURE-timeseries",
-                "x": 0,
-                "y": 37
             },
             {
                 "i": "card-RUN_STATU-timeseries",
@@ -1995,11 +1840,6 @@
                 "y": 26
             },
             {
-                "i": "compressor_flow_range2",
-                "x": 0,
-                "y": 30
-            },
-            {
                 "i": "card-FLOW-value",
                 "x": 0,
                 "y": 34
@@ -2043,11 +1883,6 @@
                 "i": "card-InletPRESSURE-timeseries",
                 "x": 0,
                 "y": 45
-            },
-            {
-                "i": "card-outletPRESSURE-timeseries",
-                "x": 0,
-                "y": 49
             },
             {
                 "i": "card-RUN_STATU-timeseries",
@@ -2132,11 +1967,6 @@
                 "y": 30
             },
             {
-                "i": "compressor_flow_range2",
-                "x": 0,
-                "y": 34
-            },
-            {
                 "i": "card-FLOW-value",
                 "x": 0,
                 "y": 38
@@ -2180,11 +2010,6 @@
                 "i": "card-InletPRESSURE-timeseries",
                 "x": 0,
                 "y": 52
-            },
-            {
-                "i": "card-outletPRESSURE-timeseries",
-                "x": 0,
-                "y": 56
             },
             {
                 "i": "card-RUN_STATU-timeseries",

@@ -1,5 +1,6 @@
 Point,Value,Point_Data_Type,DataType,Function,Input Argument list of metric names,Input Arg Value,Input Arg Value Explanation,Calulate_Metric_name,Dim_Entity ID Value
 evt_timestamp_client,,S,Timestamp,,,,,,
+logical_interface,64,S,String,,,,,,
 drvn_p1,,S,Float,,,,,,
 maintenance_status_x,,S,Integer,,,,,,
 mainteancne_status_y,,S,Integer,,,,,,

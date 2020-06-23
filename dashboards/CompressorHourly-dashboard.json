@@ -218,8 +218,8 @@
                 "attributes": [
                     {
                         "aggregator": "mean",
-                        "attribute": "drvn_p1_EquipmentHourly_mean",
-                        "id": "drvn_p1_EquipmentHourly_mean"
+                        "attribute": "drvn_p1_ACME_Compressors_Hourly_mean",
+                        "id": "drvn_p1_ACME_Compressors_Hourly_mean"
                     }
                 ],
                 "range": {
@@ -231,7 +231,7 @@
             "content": {
                 "series": [
                     {
-                        "dataSourceId": "drvn_p1_EquipmentHourly_mean",
+                        "dataSourceId": "drvn_p1_ACME_Compressors_Hourly_mean",
                         "label": "Mean"
                     }
                 ],
@@ -248,8 +248,8 @@
                 "attributes": [
                     {
                         "aggregator": "mean",
-                        "attribute": "drvn_p2_EquipmentHourly_mean",
-                        "id": "drvn_p2_EquipmentHourly_mean"
+                        "attribute": "drvn_p2_ACME_Compressors_Hourly_mean",
+                        "id": "drvn_p2_ACME_Compressors_Hourly_mean"
                     }
                 ],
                 "range": {
@@ -261,7 +261,7 @@
             "content": {
                 "series": [
                     {
-                        "dataSourceId": "drvn_p2_EquipmentHourly_mean",
+                        "dataSourceId": "drvn_p2_ACME_Compressors_Hourly_mean",
                         "label": "Mean"
                     }
                 ],
@@ -278,8 +278,8 @@
                 "attributes": [
                     {
                         "aggregator": "mean",
-                        "attribute": "drvn_t1_EquipmentHourly_mean",
-                        "id": "drvn_t1_EquipmentHourly_mean"
+                        "attribute": "drvn_t1_ACME_Compressors_Hourly_mean",
+                        "id": "drvn_t1_ACME_Compressors_Hourly_mean"
                     }
                 ],
                 "range": {
@@ -291,7 +291,7 @@
             "content": {
                 "series": [
                     {
-                        "dataSourceId": "drvn_t1_EquipmentHourly_mean",
+                        "dataSourceId": "drvn_t1_ACME_Compressors_Hourly_mean",
                         "label": "Mean"
                     }
                 ],
@@ -308,8 +308,8 @@
                 "attributes": [
                     {
                         "aggregator": "mean",
-                        "attribute": "drvn_t2_EquipmentHourly_mean",
-                        "id": "drvn_t2_EquipmentHourly_mean"
+                        "attribute": "drvn_t2_ACME_Compressors_Hourly_mean",
+                        "id": "drvn_t2_ACME_Compressors_Hourly_mean"
                     }
                 ],
                 "range": {
@@ -321,7 +321,7 @@
             "content": {
                 "series": [
                     {
-                        "dataSourceId": "drvn_t2_EquipmentHourly_mean",
+                        "dataSourceId": "drvn_t2_ACME_Compressors_Hourly_mean",
                         "label": "Mean"
                     }
                 ],
@@ -338,8 +338,8 @@
                 "attributes": [
                     {
                         "aggregator": "sum",
-                        "attribute": "drvn_flow_EquipmentHourly_sum",
-                        "id": "drvn_flow_EquipmentHourly_sum"
+                        "attribute": "drvn_flow_ACME_Compressors_Hourly_sum",
+                        "id": "drvn_flow_ACME_Compressors_Hourly_sum"
                     }
                 ],
                 "range": {
@@ -351,7 +351,7 @@
             "content": {
                 "series": [
                     {
-                        "dataSourceId": "drvn_flow_EquipmentHourly_sum",
+                        "dataSourceId": "drvn_flow_ACME_Compressors_Hourly_sum",
                         "label": "Sum"
                     }
                 ],
@@ -363,7 +363,7 @@
             "type": "TIMESERIES"
         }
     ],
-    "title": "EquipmentHourly",
+    "title": "ACME_Compressors_Hourly",
     "layouts": {
         "max": [
             {
