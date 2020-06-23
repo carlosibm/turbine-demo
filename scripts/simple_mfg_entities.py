@@ -7,14 +7,16 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, func, 
 import sys
 import csv
 import pandas as pd
-#import numpy as np
+import numpy as np
+from iotfunctions.ui import UISingle, UIMulti
 from iotfunctions import bif
 from iotfunctions.base import BaseDataSource
-#from iotfunctions.db import Database
+from iotfunctions.db import Database
 from iotfunctions.automation import TimeSeriesGenerator
 import logging
-#from iotfunctions.enginelog import EngineLogging
-#EngineLogging.configure_console_logging(logging.DEBUG)
+from iotfunctions.enginelog import EngineLogging
+
+EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 import datetime as dt
 
@@ -124,7 +126,7 @@ class Turbines(metadata.BaseCustomEntityType):
             point_dimension_values = {"label": "", "units": "", "parameter_name": ""}
             metrics = []
             dims = []
-            constants = []
+            consts = []
             funs = []
 
             for row in csv_reader:
@@ -159,7 +161,7 @@ class Turbines(metadata.BaseCustomEntityType):
                         if row["Point_Data_Type"] == "C":
                             logging.debug("________________________ Point point_data_type constant")
                             constant_to_add = {'parameter_name': parameter_name, 'type': type, 'value': parameter_value}
-                            constants.append(constant_to_add)
+                            consts.append(constant_to_add)
 
                         # Create Function
                         if row["Point_Data_Type"] == "F":
@@ -169,9 +171,6 @@ class Turbines(metadata.BaseCustomEntityType):
                     except:
                         logging.debug(sys.exc_info()[0])  # the exception instance
                         break
-
-        # constants
-        constants = []
 
         physical_name = entity_type_name.lower()
 
@@ -209,6 +208,27 @@ class Turbines(metadata.BaseCustomEntityType):
                 dim['parameter_name'] = dim['parameter_name'].replace(char, "")
             self.dimension_columns.append(Column(dim['parameter_name'], String(50)))
             logging.debug("Adding cleansed dimension name to entity type %s" % dim['parameter_name'])
+
+        # constants
+        self.constants = []
+
+        for constant in consts:
+            logging.debug("Adding constant name to entity type %s" % constant['parameter_name'])
+            logging.debug("Adding constant type to entity type %s" % constant['type'])
+            logging.debug("Adding constant value to entity type %s" % constant['value'])
+            unallowed_chars = "!@#$()"
+            for char in unallowed_chars:
+                constant['parameter_name'] = constant['parameter_name'].replace(char, "")
+            logging.debug("Adding cleansed constnat name to entity type %s" % constant['parameter_name'])
+            if constant['type'] == "Float":
+                self.constants.append(
+                    UISingle(name=constant['parameter_name'], datatype=float, values=constant['value']))
+            if constant['type'] == "String":
+                self.constants.append(
+                    UISingle(name=constant['parameter_name'], datatype=str, default=constant['value']))
+            if constant['type'] == "Integer":
+                self.constants.append(
+                    UISingle(name=constant['parameter_name'], datatype=int, default=constant['value']))
 
         # functions
         functions = []
@@ -252,7 +272,7 @@ class Turbines(metadata.BaseCustomEntityType):
 
         output_items_extended_metadata = {}
 
-        super().__init__(name=entity_type_name, db=db, constants=constants, granularities=granularities,
+        super().__init__(name=entity_type_name, db=db, constants=self.constants, granularities=granularities,
                          columns=columns, functions=functions, dimension_columns=self.dimension_columns,
                          output_items_extended_metadata=output_items_extended_metadata, generate_days=generate_days,
                          drop_existing=drop_existing, description=description, db_schema=db_schema)
@@ -279,7 +299,7 @@ class Turbines(metadata.BaseCustomEntityType):
 
         # Ingest timeseries data from csv file
         first_row == True
-        file_to_ingest = '/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv'
+        file_to_ingest = './data/COMPRESSORS_D.csv'
         print("Open File  %s " % file_to_ingest)
 
         with open(file_to_ingest, mode='r') as csv_file:
@@ -288,12 +308,12 @@ class Turbines(metadata.BaseCustomEntityType):
             fist_time = True
             timeseries_data = []
             data_dict = {"evt_timestamp": "", "deviceid": "", "devicetype": "", "logicalinterface_id": "",
-                "asset_id": "", "entity_id": "", "drvn_t1": "", "drvn_p1": "", "predict_drvn_t1": "",
-                "predict_drvn_p1": "", "drvn_t2": "", "drvn_p2": "", "predict_drvn_t2": "", "predict_drvn_p2": "",
-                "drvn_flow": "", "compressor_in_y": "", "compressor_in_x": "", "compressor_out_y": "",
-                "compressor_out_x": "", "run_status": "", "run_status_x": "", "run_status_y": "",
-                "scheduled_maintenance": "", "unscheduled_maintenance": "", "maintenance_status_x": "",
-                "maintenance_status_y": "", "drvr_rpm": ""}
+                         "asset_id": "", "entity_id": "", "drvn_t1": "", "drvn_p1": "", "predict_drvn_t1": "",
+                         "predict_drvn_p1": "", "drvn_t2": "", "drvn_p2": "", "predict_drvn_t2": "",
+                         "predict_drvn_p2": "", "drvn_flow": "", "compressor_in_y": "", "compressor_in_x": "",
+                         "compressor_out_y": "", "compressor_out_x": "", "run_status": "", "run_status_x": "",
+                         "run_status_y": "", "scheduled_maintenance": "", "unscheduled_maintenance": "",
+                         "maintenance_status_x": "", "maintenance_status_y": "", "drvr_rpm": ""}
 
             for row in csv_reader:
                 if first_row == True:
@@ -306,19 +326,25 @@ class Turbines(metadata.BaseCustomEntityType):
                         break  # No more rows
                     logging.debug("line_count %s " % line_count)
                     timeseries_data.append({"deviceid": row["DEVICEID"], "evt_timestamp": row["EVT_TIMESTAMP"],
-                        "devicetype": row["DEVICETYPE"], "logicalinterface_id": row["LOGICALINTERFACE_ID"],
-                        "asset_id": row["ASSET_ID"], "entity_id": row["ENTITY_ID"], "drvn_t1": row["DRVN_T1"],
-                        "drvn_p1": row["DRVN_P1"], "predict_drvn_t1": row["PREDICT_DRVN_T1"],
-                        "predict_drvn_p1": row["PREDICT_DRVN_P1"], "drvn_t2": row["DRVN_T2"], "drvn_p2": row["DRVN_P2"],
-                        "predict_drvn_t2": row["PREDICT_DRVN_T2"], "predict_drvn_p2": row["PREDICT_DRVN_P2"],
-                        "drvn_flow": row["DRVN_FLOW"], "compressor_in_y": row["COMPRESSOR_IN_Y"],
-                        "compressor_in_x": row["COMPRESSOR_IN_X"], "compressor_out_y": row["COMPRESSOR_OUT_Y"],
-                        "compressor_out_x": row["COMPRESSOR_OUT_X"], "run_status": row["RUN_STATUS"],
-                        "run_status_x": row["RUN_STATUS_X"], "run_status_y": row["RUN_STATUS_Y"],
-                        "scheduled_maintenance": row["SCHEDULED_MAINTENANCE"],
-                        "unscheduled_maintenance": row["UNSCHEDULED_MAINTENANCE"],
-                        "maintenance_status_x": row["MAINTENANCE_STATUS_X"],
-                        "maintenance_status_y": row["MAINTENANCE_STATUS_Y"], "drvr_rpm": row["DRVR_RPM"], })
+                                            "devicetype": row["DEVICETYPE"],
+                                            "logicalinterface_id": row["LOGICALINTERFACE_ID"],
+                                            "asset_id": row["ASSET_ID"], "entity_id": row["ENTITY_ID"],
+                                            "drvn_t1": row["DRVN_T1"], "drvn_p1": row["DRVN_P1"],
+                                            "predict_drvn_t1": row["PREDICT_DRVN_T1"],
+                                            "predict_drvn_p1": row["PREDICT_DRVN_P1"], "drvn_t2": row["DRVN_T2"],
+                                            "drvn_p2": row["DRVN_P2"], "predict_drvn_t2": row["PREDICT_DRVN_T2"],
+                                            "predict_drvn_p2": row["PREDICT_DRVN_P2"], "drvn_flow": row["DRVN_FLOW"],
+                                            "compressor_in_y": row["COMPRESSOR_IN_Y"],
+                                            "compressor_in_x": row["COMPRESSOR_IN_X"],
+                                            "compressor_out_y": row["COMPRESSOR_OUT_Y"],
+                                            "compressor_out_x": row["COMPRESSOR_OUT_X"],
+                                            "run_status": row["RUN_STATUS"], "run_status_x": row["RUN_STATUS_X"],
+                                            "run_status_y": row["RUN_STATUS_Y"],
+                                            "scheduled_maintenance": row["SCHEDULED_MAINTENANCE"],
+                                            "unscheduled_maintenance": row["UNSCHEDULED_MAINTENANCE"],
+                                            "maintenance_status_x": row["MAINTENANCE_STATUS_X"],
+                                            "maintenance_status_y": row["MAINTENANCE_STATUS_Y"],
+                                            "drvr_rpm": row["DRVR_RPM"], })
                     logging.debug("Reading metric name deviceid %s" % row["DEVICEID"])
                     logging.debug("Reading metric name evt_timesamp %s" % row["EVT_TIMESTAMP"])
                     logging.debug("Reading metric name devicetype %s" % row["DEVICETYPE"])
@@ -579,16 +605,16 @@ class Equipment(metadata.BaseCustomEntityType):
         #   DELETE FROM BLUADMIN.EQUIPMENT WHERE DEVICEID=73000;
 
         sim = {'freq': '5min', 'auto_entity_count': 1,
-            'data_item_mean': {'drvn_t1': 22, 'STEP': 1, 'drvn_p1': 50, 'asset_id': 1},
-            'data_item_domain': {  # 'dim_business' : ['Australia','Netherlands','USA' ],
-                'dim_business': ['Netherlands'],
-                # 'dim_site' : ['FLNG Prelude','Pernis Refinery','Convent Refinery', 'FCCU', 'HTU3', 'HTU2','H-Oil','HCU' ],
-                'dim_site': ['HCU'], 'dim_equipment_type': ['Train'],
-                'dim_train_type': ['FGC-B', 'FGC-A', 'FGC-C ', 'P-45001A'],
-                # 'dim_service': ['Charge Pump','H2 Compressor','Hydrogen Makeup Compressor','Wet Gas Compressor', 'Fresh Feed Pump'],
-                'dim_service': ['H2 Compressor'],  # 'dim_asset_id': ['2K-330','2K-331','2K-332','2K-333'],
-                'dim_asset_id': ['016-IV-1011', '016-IV-3011', '016-IV-4011', '016-IV-5011', '016-IV-6011']},
-            'drop_existing': True}
+               'data_item_mean': {'drvn_t1': 22, 'STEP': 1, 'drvn_p1': 50, 'asset_id': 1},
+               'data_item_domain': {  # 'dim_business' : ['Australia','Netherlands','USA' ],
+                   'dim_business': ['Netherlands'],
+                   # 'dim_site' : ['FLNG Prelude','Pernis Refinery','Convent Refinery', 'FCCU', 'HTU3', 'HTU2','H-Oil','HCU' ],
+                   'dim_site': ['HCU'], 'dim_equipment_type': ['Train'],
+                   'dim_train_type': ['FGC-B', 'FGC-A', 'FGC-C ', 'P-45001A'],
+                   # 'dim_service': ['Charge Pump','H2 Compressor','Hydrogen Makeup Compressor','Wet Gas Compressor', 'Fresh Feed Pump'],
+                   'dim_service': ['H2 Compressor'],  # 'dim_asset_id': ['2K-330','2K-331','2K-332','2K-333'],
+                   'dim_asset_id': ['016-IV-1011', '016-IV-3011', '016-IV-4011', '016-IV-5011', '016-IV-6011']},
+               'drop_existing': True}
 
         generator = bif.EntityDataGenerator(ids=None, parameters=sim)
         functions.append(generator)
