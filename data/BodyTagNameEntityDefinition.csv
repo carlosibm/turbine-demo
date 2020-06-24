@@ -1,0 +1,39 @@
+Point,Value,Point_Data_Type,DataType,Function,Input Argument list of metric names,Input Arg Value,Input Arg Value Explanation,Calulate_Metric_name,Dim_Entity ID Value
+$TI_timestamp,,S,Timestamp,,,,,,
+percent_util,,S,Float,,,,,,
+pva,,S,Float,,,,,,
+pvb,,S,Float,,,,,,
+pvc,,S,Float,,,,,,
+drvr_amp,,S,Float,,,,,,
+drvr_pwr,,S,Float,,,,,,
+drvr_p1,,S,Float,,,,,,
+drvr_p2,,S,Float,,,,,,
+drvr_t3,,S,Float,,,,,,
+drvr_t4,,S,Float,,,,,,
+drvn_amp,,S,Float,,,,,,
+drvn_pwr,,S,Float,,,,,,
+drvn_flow,,S,Float,,,,,,
+drvn_p1,,S,Float,,,,,,
+drvn_p2,,S,Float,,,,,,
+drvn_t1,,S,Float,,,,,,
+drvn_t2,,S,Float,,,,,,
+plant,14000-NGL Extract Liquefact,D,String,,,,,,73000
+train,K-14040,D,String,,,,,,73000
+equipment_type,Gas Compressor,D,String,,,,,,73000
+type,CentrifugalCompressor,D,String,,,,,,73000
+units,m2/s,D,String,,,,,,73000
+service,PMR Compressor,D,Integer,,,,,,73000
+asset_id,K-14040,D,String,,,,,,73000
+class,14,D,Integer,,,,,,
+summary_weight,100,D,Integer,,,,,,
+green,100,D,Integer,,,,,,
+yellow,100,D,Integer,,,,,,
+comments,Train is being decommissioned,D,String,,,,,,
+critical_device,0,D,Integer,,,,,,
+limit_drvr_rpm_max,4000,S,Float,,,,,,
+limit_drvr_rpm_min,1000,S,Float,,,,,,
+limit_drvn_flow_max,500,S,Float,,,,,,
+limit_drvn_p1_max,45000,S,Float,,,,,,
+limit_drvn_p2_max,55000,S,Float,,,,,,
+limit_drvn_t1_max,525,S,Float,,,,,,
+limit_drvn_t2_max,625,S,Float,,,,,,
