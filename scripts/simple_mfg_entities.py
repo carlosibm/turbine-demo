@@ -6,6 +6,7 @@ from iotfunctions.metadata import EntityType
 from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, func, SmallInteger
 import sys
 import csv
+import datetime
 import pandas as pd
 import numpy as np
 from iotfunctions.ui import UISingle, UIMulti
@@ -96,16 +97,11 @@ class Turbines(metadata.BaseCustomEntityType):
     https://github.com/ibm-watson-iot/functions/blob/60002500117c4559ed256cb68204c71d2e62893d/iotfunctions/metadata.py#L2237
     '''
 
-    def __init__(self, name, db, db_schema=None, description=None, generate_days=0, drop_existing=True,
+    def __init__(self, asset_tags_file, name, db, db_schema=None, description=None, generate_days=0, drop_existing=True,
                  generate_entities=None, column_map=None, table_name=None):
-        if (len(sys.argv) > 0):
-            entity_type_name = sys.argv[1]
-            input_file = sys.argv[2]
-            logging.debug("entity_type_name %s" % table_name)
-            logging.debug("input_file %s" % input_file)
-        else:
-            logging.debug("Please provide path to csv file as script argument")
-            exit()
+        entity_type_name = name
+        logging.debug("entity_type_name %s" % table_name)
+        logging.debug("asset_tags_file %s" % asset_tags_file)
 
         # Initialize Entity Type class variables
         self.db_schema = db_schema
@@ -120,7 +116,7 @@ class Turbines(metadata.BaseCustomEntityType):
 
         # Read CSV File with Entity Type Configuration
         print("Open File")
-        with open(input_file, mode='r') as csv_file:
+        with open(asset_tags_file, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             line_count = 0
             point_dimension_values = {"label": "", "units": "", "parameter_name": ""}
@@ -295,7 +291,7 @@ class Turbines(metadata.BaseCustomEntityType):
             else:
                 print('\t' * (indent + 1) + str(value))
 
-    def read_meter_data(self, input_file=None, first_row=None, column_map=None):
+    def read_meter_data(self, asset_series_data_file, first_row=None, column_map=None):
         '''
        # Check to make sure table was created
         source_table_name = "Equipment"
@@ -306,64 +302,58 @@ class Turbines(metadata.BaseCustomEntityType):
         logging.debug(df.head())
         df.to_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
         '''
+        #  Set constants for Timeseries data
 
         # Ingest timeseries data from csv file
         first_row == True
-        file_to_ingest = './data/COMPRESSORS_D.csv'
-        print("Open File  %s " % file_to_ingest)
+        logging.debug("Open File  %s " % asset_series_data_file)
+        logging.debug("Reading data for Entity Type  %s " % self.name)
 
-        with open(file_to_ingest, mode='r') as csv_file:
+        with open(asset_series_data_file, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             line_count = 0
-            fist_time = True
+            first_row = True
             timeseries_data = []
-            data_dict = {"evt_timestamp": "", "deviceid": "", "devicetype": "", "logicalinterface_id": "",
-                         "asset_id": "", "entity_id": "", "drvn_t1": "", "drvn_p1": "", "predict_drvn_t1": "",
-                         "predict_drvn_p1": "", "drvn_t2": "", "drvn_p2": "", "predict_drvn_t2": "",
-                         "predict_drvn_p2": "", "drvn_flow": "", "compressor_in_y": "", "compressor_in_x": "",
-                         "compressor_out_y": "", "compressor_out_x": "", "run_status": "", "run_status_x": "",
-                         "run_status_y": "", "scheduled_maintenance": "", "unscheduled_maintenance": "",
-                         "maintenance_status_x": "", "maintenance_status_y": "", "drvr_rpm": ""}
+            data_dict = {"evt_timestamp": "", "deviceid": "", "devicetype": "",
+                         "asset_id": "", "entity_id": "", "percent_util": "", "pva": "", "pvb": "",
+                         "pvc": "", "drvr_amp": "", "drvr_pwr": "", "drvr_p1": "",
+                         "drvr_p2": "", "drvr_t3": "", "drvr_t4": "", "drvn_amp": "",
+                         "drvn_pwr": "", "drvn_flow": "", "drvn_p1": "", "drvn_p2": "",
+                         "drvn_t1": "", "drvn_t2": ""}
 
             for row in csv_reader:
                 if first_row == True:
                     logging.debug("Timeseries Data Column names are %s" % {", ".join(row)})
                     first_row = False
+                    device_id  = "K-14040"
                     line_count += 1
                 else:
                     # try:
-                    if row["DEVICEID"] == "":
+                    if row["$TI_timestamp"] == "":
                         break  # No more rows
                     logging.debug("line_count %s " % line_count)
-                    timeseries_data.append({"deviceid": row["DEVICEID"], "evt_timestamp": row["EVT_TIMESTAMP"],
-                                            "devicetype": row["DEVICETYPE"],
-                                            "logicalinterface_id": row["LOGICALINTERFACE_ID"],
-                                            "asset_id": row["ASSET_ID"], "entity_id": row["ENTITY_ID"],
-                                            "drvn_t1": row["DRVN_T1"], "drvn_p1": row["DRVN_P1"],
-                                            "predict_drvn_t1": row["PREDICT_DRVN_T1"],
-                                            "predict_drvn_p1": row["PREDICT_DRVN_P1"], "drvn_t2": row["DRVN_T2"],
-                                            "drvn_p2": row["DRVN_P2"], "predict_drvn_t2": row["PREDICT_DRVN_T2"],
-                                            "predict_drvn_p2": row["PREDICT_DRVN_P2"], "drvn_flow": row["DRVN_FLOW"],
-                                            "compressor_in_y": row["COMPRESSOR_IN_Y"],
-                                            "compressor_in_x": row["COMPRESSOR_IN_X"],
-                                            "compressor_out_y": row["COMPRESSOR_OUT_Y"],
-                                            "compressor_out_x": row["COMPRESSOR_OUT_X"],
-                                            "run_status": row["RUN_STATUS"], "run_status_x": row["RUN_STATUS_X"],
-                                            "run_status_y": row["RUN_STATUS_Y"],
-                                            "scheduled_maintenance": row["SCHEDULED_MAINTENANCE"],
-                                            "unscheduled_maintenance": row["UNSCHEDULED_MAINTENANCE"],
-                                            "maintenance_status_x": row["MAINTENANCE_STATUS_X"],
-                                            "maintenance_status_y": row["MAINTENANCE_STATUS_Y"],
-                                            "drvr_rpm": row["DRVR_RPM"], })
-                    logging.debug("Reading metric name deviceid %s" % row["DEVICEID"])
-                    logging.debug("Reading metric name evt_timesamp %s" % row["EVT_TIMESTAMP"])
-                    logging.debug("Reading metric name devicetype %s" % row["DEVICETYPE"])
-                    logging.debug("Reading metric name run_status %s" % row["RUN_STATUS"])
-                    logging.debug("Reading metric name logicalinterface_id %s" % row["LOGICALINTERFACE_ID"])
+                    date_time_utc = datetime.datetime.strptime(row["$TI_timestamp"], '%d/%m/%Y %H:%M')
+                    logging.debug("line_count %s " % line_count)
+                    timeseries_data.append({"deviceid": device_id, "evt_timestamp": date_time_utc,
+                                            "devicetype": self.name,
+                                            "asset_id": device_id, "entity_id": device_id,
+                                            "percent_util": row["percent_util"], "pva": row["pva"],
+                                            "pvb": row["pvb"],
+                                            "pvc": row["pvc"], "drvr_amp": row["drvr_amp"],
+                                            "drvr_amp": row["drvr_amp"], "drvr_pwr": row["drvr_pwr"],
+                                            "drvr_p1": row["drvr_p1"], "drvr_p2": row["drvr_p2"],
+                                            "drvr_t3": row["drvr_t3"],
+                                            "drvr_t4": row["drvr_t4"],
+                                            "drvn_amp": row["drvn_amp"],
+                                            "drvn_pwr": row["drvn_pwr"],
+                                            "drvn_flow": row["drvn_flow"], "drvn_p1": row["drvn_p1"],
+                                            "drvn_p2": row["drvn_p2"],
+                                            "drvn_t1": row["drvn_t1"],
+                                            "drvn_t2": row["drvn_t2"]})
+                    logging.debug("Reading metric name at timestamp  %s" % row["$TI_timestamp"])
                     line_count += 1  # except:  #    logging.debug(sys.exc_info()[0])  # the exception instance  #    break
 
-        logging.debug("Imported Compressors Timeseries Data")
-        logging.debug(timeseries_data)
+        logging.debug("Imported %s  Data" %self.name)
 
         # Compare df_to_import  versus df using json object.
         pd.set_option('display.max_columns', None)
@@ -434,7 +424,7 @@ class Turbines(metadata.BaseCustomEntityType):
                                                                                          'run_status': '-2'}, {
                 'deviceid': '73008', 'evt_timesamp': '2020-05-16-00.47.35.464000', 'devicetype': 'GasTurbines3',
                 'run_status': '0'}]
-        '''
+
 
         response_back = {
             "evt_timestamp": ["2020-06-21T10:21:14.582", "2020-06-21T09:21:14.582", "2020-06-21T08:21:14.582",
@@ -452,8 +442,9 @@ class Turbines(metadata.BaseCustomEntityType):
             "scheduled_maintenance": [0, 0, 0, 0, 1], "unscheduled_maintenance": [1, 1, 0, 0, 0],
             "maintenance_status_x": [250, 260, 270, 280, 290], "maintenance_status_y": [35, 45, 55, 65, 75],
             "drvr_rpm": [10, 20, 30, 40, 50]}
-
         # df = pd.DataFrame(data=response_back)
+        '''
+
         logging.debug("DF from timeseries data csv ")
         df = pd.DataFrame(data=timeseries_data)
         logging.debug(df.head())

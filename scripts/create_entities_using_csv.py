@@ -29,9 +29,11 @@ logging.debug("start")
 if (len(sys.argv) > 0):
     entity_type_name = sys.argv[1]
     entityType = entity_type_name
-    input_file = sys.argv[2]
+    asset_tags_file = sys.argv[2]
+    asset_series_data_file = sys.argv[3]
     logging.debug("entity_name %s" % entity_type_name)
-    logging.debug("input_file %s" % input_file)
+    logging.debug("asset_tags %s" % asset_tags_file)
+    logging.debug("asset_scan_data %s" % asset_series_data_file)
 else:
     logging.debug("Please provide path to csv file as script argument")
     exit()
@@ -63,7 +65,7 @@ db.drop_table(entity_type_name, schema=db_schema)
 # https://github.com/ibm-watson-iot/functions/blob/60002500117c4559ed256cb68204c71d2e62893d/iotfunctions/metadata.py#L2237
 ###
 logging.debug("Create Entity Type")
-entity = Turbines(name=entity_type_name, db=db, db_schema=db_schema, description="Equipment Turbines",
+entity = Turbines(asset_tags_file=asset_tags_file,  name=entity_type_name, db=db, db_schema=db_schema, description="Equipment Turbines",
                   generate_entities=True, table_name=entity_type_name)
 
 logging.debug("Register EntityType")
@@ -76,7 +78,7 @@ logging.debug("Create Dimension")
 entity.make_dimension(None, entity.dimension_columns)
 
 logging.debug("Read Metrics Data")
-entity.read_meter_data()
+entity.read_meter_data(asset_series_data_file=asset_series_data_file)
 
 # logging.debug("Create Calculated Metrics")
 # entity.publish_kpis()
