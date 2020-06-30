@@ -11,14 +11,16 @@ from iotfunctions.base import BaseTransformer
 #from ai import settings
 from iotfunctions.pipeline import JobController
 from iotfunctions.enginelog import EngineLogging
+from iotfunctions import system_function
 EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# from iotfunctions.db import http_request
 
 import sys
 import pandas as pd
 import numpy as np
-
+import requests
 import csv
 import sqlalchemy
 
@@ -27,7 +29,7 @@ logging.debug("start")
 
 if (len(sys.argv) > 0):
     entity_type_name = sys.argv[1]
-    entityType = "GasTurbines3"
+    # entityType = "GasTurbinesKB3"
     input_file = sys.argv[2]
     logging.debug("entity_name %s" %entity_type_name)
     logging.debug("input_file %s" % input_file)
@@ -35,6 +37,10 @@ else:
     logging.debug("Please provide path to csv file as script argument")
     exit()
 
+
+methods = {'count': 'Count', 'std': 'Std', 'product': 'Product', 'last': 'Last', 'min': 'Minimum', 'max': 'Maximum', 'sum': 'Sum', 'median': 'Median', 'var': 'Var', 'first': 'First', 'count_distinct': 'Count_distinct', 'mean': 'Mean'}
+functions = []
+rest_functions = []
 
 print("Read CSV File")
 with open(input_file, mode='r') as csv_file:
@@ -48,7 +54,6 @@ with open(input_file, mode='r') as csv_file:
     metrics = []
     dims = []
     constants = []
-    functions =[]
     # dimension_columns = []
 
     for row in csv_reader:
@@ -112,10 +117,60 @@ with open(input_file, mode='r') as csv_file:
 
                     output_name = row['Point']
                     expression = row['Function']
-                    print("row['Input Arg Value']")
-                    print(row['Input Arg Value'])
+                    # input_metrics = row['Input Arg Value'].lower().replace(' ', '').split('|') # merge with "Input Argument list of metric names"
+                    # function_name =
                     input_metrics = row['Input Arg Value'].lower().replace(' ', '').split('|') # merge with "Input Argument list of metric names"
-                    print(input_metrics)
+                    if len(input_metrics[0]) < 1:
+                        print("function requires input metrics, skipping")
+                        continue
+                    source = input_metrics[0]
+                    function_name = row['Function']
+                    if function_name in methods.keys():
+                        function_name = methods[function_name]
+                        input = {"source": source}
+                        output_name = function_name.lower() + entity_type_name
+                        # functions.append(f)
+                    elif function_name == 'ratio':
+                        # expression = "df['%s'].iloc[-1] / df['%s'].iloc[-1]" % (input_metrics[0], input_metrics[1])
+                        function_name = "PythonExpression"
+                        expression = "df['%s'] / df['%s']" % (input_metrics[0], input_metrics[1])
+                        input = {"expression": expression}
+                        output_name = entity_type_name.lower() + "ratio"
+                        f = bif.PythonExpression(expression=expression, output_name=output_name)
+                        functions.append(f)
+                        continue
+                    elif function_name == 'multiply':
+                        # expression = "df['%s'].iloc[-1] / df['%s'].iloc[-1]" % (input_metrics[0], input_metrics[1])
+                        function_name = "PythonExpression"
+                        expression = "df['%s'] / df['%s']" % (input_metrics[0], input_metrics[1])
+                        input = {"expression": expression}
+                        output_name = entity_type_name.lower() + "multiply"
+                        f = bif.PythonExpression(expression=expression, output_name=output_name)
+                        functions.append(f)
+                    else:
+                        function_name = "PythonExpression"
+                        expression = input_metrics[0]
+                        f = bif.PythonExpression(expression=expression, output_name=output_name)
+                        functions.append(f)
+                        continue
+                    # else:
+                        # function_name = methods[function_name]
+                    # grain = ["Daily", "Hourly", ]
+                    payload = {
+                        "functionName": function_name,
+                        "granularity": "Daily",
+                        "input": input,
+                        "output": {
+                            "name": output_name
+                        },
+                        "schedule": {},
+                        "backtrack": {},
+                        "enabled": True
+                    }
+
+                    print(payload)
+                    rest_functions.append(payload)
+                    continue
                     '''
                     # dynamically get method from bif
                     method = getattr(bif, row['Function'])
@@ -123,42 +178,46 @@ with open(input_file, mode='r') as csv_file:
                         f =
                     '''
                     # TODO, use aggregator
-                    # from iotfunctions import system_function
-                    # system_function.AggregateItems(['Suction'] , 'max')
+                    #
+                    #
                     # system_function.AggregateItems(row['Input Argument list of metric names'].split(',') , row["Function"])
+                    '''
+                    agg_methods = ['sum', 'count', 'count_distinct', 'min', 'max', 'mean', 'median', 'std', 'var', 'first', 'last', 'product']
+                    if row['Function'] in agg_methods:
+                        print("adding " + row['Function'] + " aggregator method")
+                        f = system_function.AggregateItems([input_metrics[0]] , row['Function'])
+                        # f.PACKAGE_URL = 'git+https://github.com/ibm-watson-iot/functions.git@'
+                    '''
                     if row["Function"] == 'max':
-                        expression = "df['%s'].max()" % input_metrics[0]
-                        f = bif.PythonExpression(expression=expression, output_name=output_name)
+                        # expression = "df['%s'].max()" % input_metrics[0]
+                        # f = bif.PythonExpression(expression=expression, output_name=output_name)
+                        print("adding " + row['Function'] + " aggregator method")
+                        f = system_function.AggregateItems([input_metrics[0]] , 'max')
+                        # f.PACKAGE_URL = 'git+https://github.com/ibm-watson-iot/functions.git@'
                         # f = bif.Maximum
-                        functions.append(f)
                     elif row["Function"] == 'min':
                         expression = "df['%s'].min()" % input_metrics[0]
                         f = bif.PythonExpression(expression=expression, output_name=output_name)
-                        functions.append(f)
                     elif row["Function"] == 'sum':
                         expression = "df['%s'].sum()" % input_metrics[0]
                         f = bif.PythonExpression(expression=expression, output_name=output_name)
-                        functions.append(f)
                     elif row["Function"] == 'multiply':
                         print(input_metrics)
                         # expression = "df['%s'].iloc[-1] * df['%s'].iloc[-1]" % (input_metrics[0], input_metrics[1])
                         expression = "df['%s'] * df['%s']" % (input_metrics[0], input_metrics[1])
                         f = bif.PythonExpression(expression=expression, output_name=output_name)
-                        functions.append(f)
                     elif row["Function"] == 'ratio':
                         # expression = "df['%s'].iloc[-1] / df['%s'].iloc[-1]" % (input_metrics[0], input_metrics[1])
                         expression = "df['%s'] / df['%s']" % (input_metrics[0], input_metrics[1])
                         f = bif.PythonExpression(expression=expression, output_name=output_name)
-                        functions.append(f)
                     elif row["Function"] == 'last':
                         # expression = "df['%s'].iloc[-1]" % input_metrics[0]
                         expression = "df['%s']" % input_metrics[0]
                         f = bif.PythonExpression(expression=expression, output_name=output_name)
-                        functions.append(f)
                     elif row["Function"] == "PythonExpression":
                         expression = row['Input Arg Value']
                         f = bif.PythonExpression(expression=expression, output_name=output_name)
-                        functions.append(f)
+                    # functions.append(f)
             except:
                 logging.debug(sys.exc_info()[0])  # the exception instance
                 break
@@ -173,7 +232,8 @@ with open(input_file, mode='r') as csv_file:
 '''
 logging.debug("Read credentials")
 credentials_path = "/Users/kkbankol@us.ibm.com/projects/maximo_anomaly/credentials/monitor-credentials.json"
-with open(credentials_path, encoding='utf-8') as F:
+# with open(credentials_path, encoding='utf-8') as F:
+with open(credentials_path) as F:
     credentials = json.loads(F.read())
 
 '''
@@ -198,25 +258,54 @@ db.drop_table(entity_type_name, schema = db_schema)
 ###
 columns = tuple(metrics)
 print(columns)
+print("printing functions")
 print(functions)
 
-logging.debug("Create Entity Type")
+print("printing rest_functions")
+print(rest_functions)
+# exit()
+# entity_type_name = "GasTurbinesKB2"
+
+logging.debug("Creating Entity Type")
 entity = Turbines(name = entity_type_name,
-                    db = db,
-                    db_schema = db_schema,
-                    columns = columns,
-                    functions = functions,
-                    description = "Equipment Turbines",
-                    generate_entities=True,
-                    table_name=entity_type_name
-                )
+            db = db,
+            db_schema = db_schema,
+            columns = columns,
+            functions = functions,
+            description = "Equipment Turbines",
+            generate_entities=True,
+            table_name=entity_type_name
+        )
 
 logging.debug("Register EntityType")
-entity.register(raise_error=False)
+entity.register() #raise_error=True, publish_kpis=True)
 
-
+logging.debug("Generating data")
 entity.generate_data(days=0.5)
+
+logging.debug("Publishing functions")
+logging.debug(functions)
 entity.publish_kpis()
+
+for payload in rest_functions:
+    # entity_type.db.http_request(object_type='function', object_name=name, request='DELETE', payload=payload)
+    print("posting payload")
+    print(payload)
+    url = "https://%s/api/kpi/v1/%s/entityType/%s/kpiFunction" % (credentials['iotp']['asHost'] ,credentials['tenantId'], entity_type_name)
+    headers = {'Content-Type': "application/json", 'X-Api-Key': credentials['iotp']['apiKey'],
+           'X-Api-Token': credentials['iotp']['apiToken'], 'Cache-Control': "no-cache", }
+    r = requests.post(url, headers=headers, json=payload)
+    if r.status_code == 200:
+        print("function created")
+    else:
+        print("failure creating function")
+        print(r.status_code)
+        print(r.text)
+    # entity.db.http_request('kpiFunctions', entity_type_name, 'POST', payload)
+    # exit()
+
+exit()
+
 # logging.debug("Create Dimension")
 # entity.make_dimension()
 
@@ -224,7 +313,7 @@ entity.publish_kpis()
 # entity.read_meter_data()
 
 #logging.debug("Create Calculated Metrics")
-#entity.publish_kpis()
+entity.publish_kpis()
 
 meta = db.get_entity_type(entity_type_name)
 jobsettings = {'_production_mode': False,
