@@ -202,7 +202,7 @@ class TurbineHTTPPreload(BasePreload):
                     logging.debug( "Found DRVR_P1 %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
                 if metric == 'DRVN_AMP':
-                    logging.debug("Found DRVR_P1 %s " % metrics_json[metric])
+                    logging.debug("Found DRVN_AMP %s " % metrics_json[metric])
                     net_metrics_data[metric] = metrics_json[metric]
 
             logging.debug( "net_metrics_data %s " %net_metrics_data )
