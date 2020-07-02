@@ -198,6 +198,10 @@ class TurbineHTTPPreload(BasePreload):
                 if metric == 'UNSCHEDULED_MAINTENANCE':
                     logging.debug( "Found UNSCHEDULED_MAINTENANCE %s " %metrics_json[metric] )
                     net_metrics_data[metric] = metrics_json[metric]
+                if metric == 'DRVR_P1':
+                    logging.debug( "Found DRVR_P1 %s " %metrics_json[metric] )
+                    net_metrics_data[metric] = metrics_json[metric]
+
 
             logging.debug( "net_metrics_data %s " %net_metrics_data )
             rows = len(net_metrics_data)
@@ -276,7 +280,10 @@ class TurbineHTTPPreload(BasePreload):
             #metrics_uppercase_str = m.casefold().lower()
 
             logging.debug('metrics data m %s ' %metrics_uppercase_str )
-            response_data[ m ] = np.array( metrics_json[ metrics_uppercase_str ] )
+            try:
+                response_data[ m ] = np.array( metrics_json[ metrics_uppercase_str ] )
+            except:
+                logging.debug("Problem reading metrics from simulator REST API")
             #logging.debug('metrics data %s ' %response_data[m.casefold().upper()) ])
             '''
             response_data[ m ] = np.array( metrics_json[ m ] )
