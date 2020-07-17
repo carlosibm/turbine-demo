@@ -23,27 +23,37 @@ import numpy as np
 import requests
 import csv
 import sqlalchemy
-
+import re
 
 logging.debug("start")
 
 if (len(sys.argv) > 0):
     entity_type_name = sys.argv[1]
-    # entityType = "GasTurbinesKB3"
-    input_file = sys.argv[2]
+    asset_tags_file = sys.argv[2]
+    asset_series_data_file = sys.argv[3]
+    credentials_path = sys.argv[4]
     logging.debug("entity_name %s" %entity_type_name)
-    logging.debug("input_file %s" % input_file)
+    # logging.debug("input_file %s" % input_file)
 else:
     logging.debug("Please provide path to csv file as script argument")
     exit()
 
+'''
+# Replace with a credentials dictionary or provide a credentials
+# Explore > Usage > Watson IOT Platform Analytics > Copy to clipboard
+# Past contents in a json file.
+'''
+logging.debug("Read credentials")
+# with open(credentials_path, encoding='utf-8') as F:
+with open(credentials_path) as F:
+    credentials = json.loads(F.read())
 
 methods = {'count': 'Count', 'std': 'Std', 'product': 'Product', 'last': 'Last', 'min': 'Minimum', 'max': 'Maximum', 'sum': 'Sum', 'median': 'Median', 'var': 'Var', 'first': 'First', 'count_distinct': 'Count_distinct', 'mean': 'Mean'}
 functions = []
 rest_functions = []
 
 print("Read CSV File")
-with open(input_file, mode='r') as csv_file:
+with open(asset_tags_file, mode='r') as csv_file:
     csv_reader = csv.DictReader(csv_file)
     line_count = 0
     point_dimension_values = {
@@ -54,19 +64,24 @@ with open(input_file, mode='r') as csv_file:
     metrics = []
     dims = []
     constants = []
+    funs = []
     # dimension_columns = []
 
     for row in csv_reader:
         if line_count == 0:
-            logging.debug("Column names are %s" % {", ".join(row)})
+            print(f"row {row}")
+            # logging.debug("Column names are %s" % {", ".join(row)})
             line_count += 1
         else:
             try:
-                parameter_name = row["Point"].replace(' ', '_')
+                parameter_value = row["Value"]
+                parameter_name = row["Metric"].lower().replace(" ", '-')
+                parameter_value = parameter_value.replace(" ", '-')
+                parameter_name = ''.join(re.findall(r'\w+', parameter_name))
+                print(f"{parameter_name} {parameter_value}")
                 logging.debug("Name %s" % parameter_name)
                 type = row["DataType"]
                 logging.debug("Type %s" % type)
-                parameter_value = row["Value"].replace(' ', '_')
                 logging.debug("Value %s" % parameter_value)
 
                 if parameter_name == "":
@@ -76,7 +91,7 @@ with open(input_file, mode='r') as csv_file:
                 if row["Point_Data_Type"] == "S":
                     print("________________________ Point point_data_type  %s " % row["Point_Data_Type"])
                     print("________________________ Point db function name  %s " % row["Function"])
-                    name = row['Point']
+                    name = parameter_name
                     type = row['DataType']
                     if 'string' in type.lower(): # string requires length
                         metrics.append(Column(name, getattr(sqlalchemy, type)(50)))
@@ -115,11 +130,9 @@ with open(input_file, mode='r') as csv_file:
                     print("________________________ Point db data_type  %s " % row["DataType"])
                     print("________________________ Point db function name  %s " % row["Function"])
 
-                    output_name = row['Point']
+                    output_name = parameter_name #row['Point']
                     expression = row['Function']
-                    # input_metrics = row['Input Arg Value'].lower().replace(' ', '').split('|') # merge with "Input Argument list of metric names"
-                    # function_name =
-                    input_metrics = row['Input Arg Value'].lower().replace(' ', '').split('|') # merge with "Input Argument list of metric names"
+                    input_metrics = ''.join(re.findall(r'\w+', row['Input Arg Value'].lower().replace(' ', ''))).split('|') # merge with "Input Argument list of metric names"
                     if len(input_metrics[0]) < 1:
                         print("function requires input metrics, skipping")
                         continue
@@ -168,7 +181,7 @@ with open(input_file, mode='r') as csv_file:
                         "enabled": True
                     }
 
-                    print(payload)
+                    print(f"appending function {payload}")
                     rest_functions.append(payload)
                     continue
                     '''
@@ -223,19 +236,11 @@ with open(input_file, mode='r') as csv_file:
                 break
 
 
-
-
-'''
-# Replace with a credentials dictionary or provide a credentials
-# Explore > Usage > Watson IOT Platform Analytics > Copy to clipboard
-# Past contents in a json file.
-'''
-logging.debug("Read credentials")
-credentials_path = "/Users/kkbankol@us.ibm.com/projects/maximo_anomaly/credentials/monitor-credentials.json"
-# with open(credentials_path, encoding='utf-8') as F:
-with open(credentials_path) as F:
-    credentials = json.loads(F.read())
-
+columns = tuple(metrics)
+print(f"columns {columns}")
+print("printing rest_functions")
+print(rest_functions)
+# exit()
 '''
 Create a database object to access Watson IOT Platform Analytics DB.
 '''
@@ -257,17 +262,14 @@ db.drop_table(entity_type_name, schema = db_schema)
 # https://github.com/ibm-watson-iot/functions/blob/60002500117c4559ed256cb68204c71d2e62893d/iotfunctions/metadata.py#L2237
 ###
 columns = tuple(metrics)
-print(columns)
-print("printing functions")
-print(functions)
-
 print("printing rest_functions")
 print(rest_functions)
 # exit()
 # entity_type_name = "GasTurbinesKB2"
 
 logging.debug("Creating Entity Type")
-entity = Turbines(name = entity_type_name,
+entity = Turbines(
+            name = entity_type_name,
             db = db,
             db_schema = db_schema,
             columns = columns,
@@ -275,6 +277,7 @@ entity = Turbines(name = entity_type_name,
             description = "Equipment Turbines",
             generate_entities=True,
             table_name=entity_type_name
+            # asset_tags_file=asset_tags_file
         )
 
 logging.debug("Register EntityType")
@@ -285,7 +288,9 @@ entity.generate_data(days=0.5)
 
 logging.debug("Publishing functions")
 logging.debug(functions)
-entity.publish_kpis()
+# entity.publish_kpis()
+
+print(f"columns {columns}")
 
 for payload in rest_functions:
     # entity_type.db.http_request(object_type='function', object_name=name, request='DELETE', payload=payload)
@@ -304,19 +309,18 @@ for payload in rest_functions:
     # entity.db.http_request('kpiFunctions', entity_type_name, 'POST', payload)
     # exit()
 
-exit()
+logging.debug("Create Dimension")
+entity.make_dimension()
 
-# logging.debug("Create Dimension")
-# entity.make_dimension()
-
-# logging.debug("Read Metrics Data")
-# entity.read_meter_data()
+logging.debug("Read Metrics Data")
+# entity.read_meter_data(asset_series_data_file=asset_series_data_file)
 
 #logging.debug("Create Calculated Metrics")
-entity.publish_kpis()
+# entity.publish_kpis()
 
 meta = db.get_entity_type(entity_type_name)
-jobsettings = {'_production_mode': False,
+jobsettings = {
+               # '_production_mode': False,
                '_start_ts_override': dt.datetime.utcnow() - dt.timedelta(days=10),
                '_end_ts_override': (dt.datetime.utcnow() - dt.timedelta(days=1)),  # .strftime('%Y-%m-%d %H:%M:%S'),
                '_db_schema': db_schema,
