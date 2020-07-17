@@ -190,9 +190,9 @@ class Turbines(metadata.BaseCustomEntityType):
 
         df = self.db.read_table(table_name=source_table_name.upper(), schema=self.db_schema)
         logging.debug(df.head())
-        df.to_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/Equipment.csv')
+        df.to_csv(f'/tmp/{self.name}.csv')
 
-        df_to_import = pd.read_csv('/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv')
+        df_to_import = pd.read_csv(input_file) #'/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv')
         logging.debug(df_to_import.head())
 
         '''
@@ -269,7 +269,7 @@ class Turbines(metadata.BaseCustomEntityType):
         # write the dataframe to the database table
         self.db.write_frame(df=df, table_name=self.table_name.upper())
         kwargs = {'table_name': self.table_name.upper(), 'schema': self.db_schema, 'row_count': len(df.index)}
-        self.trace_append(created_by=self, msg='Wrote data to table', log_method=logger.debug, **kwargs)
+        self.trace_append(created_by=self, msg=f'Wrote input file {input_file} to table', log_method=logger.debug, **kwargs)
         return
 
     def make_sample_entity(self, db, schema=None, name='as_sample_entity', register=False, data_days=1, freq='1min',
