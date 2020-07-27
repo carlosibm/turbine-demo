@@ -53,7 +53,7 @@ methods = {'count': 'Count', 'std': 'Std', 'product': 'Product', 'last': 'Last',
 functions = []
 rest_functions = []
 
-print("Read CSV File")
+print("Reading Tags CSV")
 with open(asset_tags_file, mode='r') as csv_file:
     csv_reader = csv.DictReader(csv_file)
     line_count = 0
@@ -235,7 +235,7 @@ entity = Turbines(
     columns=columns,
     functions=functions,
     description="Equipment Turbines",
-    generate_entities=True,
+    # generate_entities=True,
     # asset_tags_file=asset_tags_file,
     table_name=entity_type_name
 )
@@ -243,8 +243,8 @@ entity = Turbines(
 logging.debug("Register EntityType")
 entity.register()  # raise_error=True, publish_kpis=True)
 
-logging.debug("Generating data")
-entity.generate_data(days=0.5)
+# logging.debug("Generating data")
+# entity.generate_data(days=0.5)
 
 logging.debug("Publishing functions")
 logging.debug(functions)
@@ -268,7 +268,6 @@ for payload in rest_functions:
         print(r.status_code)
         print(r.text)
     # entity.db.http_request('kpiFunctions', entity_type_name, 'POST', payload)
-    # exit()
 
 logging.debug("Create Dimension")
 entity.make_dimension()

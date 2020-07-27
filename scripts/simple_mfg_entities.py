@@ -16,6 +16,9 @@ from iotfunctions.enginelog import EngineLogging
 EngineLogging.configure_console_logging(logging.DEBUG)
 logger = logging.getLogger(__name__)
 import datetime as dt
+import re
+from datetime import datetime
+
 
 # BaseCustomEntityType
 class MergeSampleTimeSeries(BaseDataSource):
@@ -188,12 +191,25 @@ class Turbines(metadata.BaseCustomEntityType):
         logging.debug("DB Name %s " % source_table_name)
         logging.debug("DB Schema %s " % self.db_schema)
 
-        df = self.db.read_table(table_name=source_table_name.upper(), schema=self.db_schema)
-        logging.debug(df.head())
-        df.to_csv(f'/tmp/{self.name}.csv')
 
-        df_to_import = pd.read_csv(input_file) #'/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv')
-        logging.debug(df_to_import.head())
+        # logging.debug(df.head())
+        # df.to_csv(f'../{self.name}.csv')
+
+        if input_file:
+            df_to_import = pd.read_csv(input_file) #'/Users/carlos.ferreira1ibm.com/ws/shell/data/COMPRESSORS_D.csv')
+            logging.debug(df_to_import.head())
+            df = df_to_import
+            updated_names = {}
+            clean = lambda x: {x: ''.join(re.findall(r'\w+', x)).lower()}
+            updated_names_list = list(map(clean, df.columns))
+            for k in updated_names_list:
+                updated_names.update(k)
+            df.rename(updated_names, axis=1, inplace=True)
+
+        else:
+            # nothing to import
+            return
+            df = self.db.read_table(table_name=source_table_name.upper(), schema=self.db_schema)
 
         '''
         # write the dataframe to the database table
@@ -239,7 +255,6 @@ class Turbines(metadata.BaseCustomEntityType):
 
         df = pd.DataFrame(data=response_back)
         '''
-        df = df_to_import
 
         # use supplied column map to rename columns
         #df = df.rename(self.column_map, axis='columns')
@@ -264,10 +279,12 @@ class Turbines(metadata.BaseCustomEntityType):
                     df[m] = None
 
         # remove columns that are not required
+        print("converting timestamp")
+        df['evt_timestamp'] = pd.to_datetime(df['datemmmddyyyy'].apply( lambda x: pd.Timestamp(datetime.strptime(x, '%m/%d/%y %H:%M'))  ))
         df = df[required_cols]
-
+        # df.to_csv("/tmp/output.csv")
         # write the dataframe to the database table
-        self.db.write_frame(df=df, table_name=self.table_name.upper())
+        self.db.write_frame(df=df, table_name=self.table_name.upper(), if_exists='append')
         kwargs = {'table_name': self.table_name.upper(), 'schema': self.db_schema, 'row_count': len(df.index)}
         self.trace_append(created_by=self, msg=f'Wrote input file {input_file} to table', log_method=logger.debug, **kwargs)
         return
