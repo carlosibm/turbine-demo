@@ -282,9 +282,12 @@ class Turbines(metadata.BaseCustomEntityType):
         print("converting timestamp")
         df['evt_timestamp'] = pd.to_datetime(df['datemmmddyyyy'].apply( lambda x: pd.Timestamp(datetime.strptime(x, '%m/%d/%y %H:%M'))  ))
         df = df[required_cols]
-        # df.to_csv("/tmp/output.csv")
+        df.to_csv("/tmp/output.csv")
+        print(df.head())
+        # exit()
         # write the dataframe to the database table
         self.db.write_frame(df=df, table_name=self.table_name.upper(), if_exists='append')
+        print("updated dataframe")
         kwargs = {'table_name': self.table_name.upper(), 'schema': self.db_schema, 'row_count': len(df.index)}
         self.trace_append(created_by=self, msg=f'Wrote input file {input_file} to table', log_method=logger.debug, **kwargs)
         return
